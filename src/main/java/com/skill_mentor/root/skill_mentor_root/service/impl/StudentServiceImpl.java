@@ -1,0 +1,48 @@
+package com.skill_mentor.root.skill_mentor_root.service.impl;
+
+import com.skill_mentor.root.skill_mentor_root.dto.StudentDTO;
+import com.skill_mentor.root.skill_mentor_root.repository.StudentRepository;
+import com.skill_mentor.root.skill_mentor_root.service.StudentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class StudentServiceImpl implements StudentService {
+
+    @Autowired
+    StudentRepository studentRepository;
+
+    @Override
+    public StudentDTO createStudent(StudentDTO studentDTO) {
+        StudentDTO studentDTO1 = studentRepository.createStudent(studentDTO);
+        return studentDTO1;
+    }
+
+    @Override
+    public List<StudentDTO> getAllStudents() {
+        return studentRepository.getAllStudents();
+    }
+
+    @Override
+    public StudentDTO getStudentById(Integer id) {
+        return studentRepository.getStudentById(id);
+    }
+
+    @Override
+    public StudentDTO updateStudentById(StudentDTO studentDTO) {
+        return studentRepository.updateStudentById(studentDTO);
+    }
+
+    @Override
+    public StudentDTO deleteStudentByid(Integer id) {
+        return studentRepository.deleteStudentById(id);
+    }
+
+    @Override
+    public List<StudentDTO> getStudentsByParam(Integer age) {
+        return studentRepository.getStudentsByParam(age);
+    }
+
+}

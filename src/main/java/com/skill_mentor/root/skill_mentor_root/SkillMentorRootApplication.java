@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SkillMentorRootApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(SkillMentorRootApplication.class, args);
 	}
 

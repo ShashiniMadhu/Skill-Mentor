@@ -1,7 +1,7 @@
 package com.skill_mentor.root.skill_mentor_root.dto;
 
 public class StudentDTO {
-    private Long studentId;
+    private Integer studentId;
     private String firstName;
     private String lastName;
     private String email;
@@ -9,25 +9,25 @@ public class StudentDTO {
     private String address;
     private Integer age;
 
-    public StudentDTO(Long studentId, String lastName, String firstName, String email, String phoneNumber, Integer age, String address) {
+    public StudentDTO(Integer studentId, String firstName, String lastName, String email, String phoneNumber, String address, Integer age) {
         this.studentId = studentId;
-        this.lastName = lastName;
         this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.age = age;
         this.address = address;
+        this.age = age;
     }
 
     public StudentDTO() {
 
     }
 
-    public Long getStudentId() {
+    public Integer getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(Long studentId) {
+    public void setStudentId(Integer studentId) {
         this.studentId = studentId;
     }
 
