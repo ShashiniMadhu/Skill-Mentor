@@ -10,28 +10,41 @@ import java.util.Optional;
 
 @Repository
 public class StudentRepository {
-
-    private List<StudentDTO> students = new ArrayList<>();
+    private final List<StudentDTO> students = new ArrayList<>();
 
     public StudentDTO createStudent(StudentDTO studentDTO) {
         students.add(studentDTO);
         return studentDTO;
     }
 
-    public List<StudentDTO> getAllStudents() {
-        return students;
+    public List<StudentDTO> getAllStudents(Integer age) {
+        return students.stream().filter(stu->age == null || stu.getAge().equals(age)).toList();
     }
 
     public StudentDTO getStudentById(Integer id){
-        Optional<StudentDTO> studentDTOOptional = students.stream().filter(stu->stu.getStudentId() == id).findFirst();
+        Optional<StudentDTO> studentDTOOptional  = students.stream().filter(stu-> Objects.equals(stu.getStudentId(), id)).findFirst();
         return studentDTOOptional.orElse(null);
     }
 
+//    public StudentDTO updateStudentById(StudentDTO studentDTO){
+//        Optional<StudentDTO> studentDTO1 = students.stream().filter(stu-> stu.getStudentId().equals(studentDTO.getStudentId())).findFirst();
+//        StudentDTO updatedStudent = studentDTO1.orElse(null);
+//        updatedStudent.setLastName(studentDTO.getLastName());
+//        students.add(0, studentDTO);
+//        return updatedStudent;
+//    }
+
     public StudentDTO updateStudentById(StudentDTO studentDTO){
-        Optional<StudentDTO> studentDTO1 = students.stream().filter(stu->stu.getStudentId().equals(studentDTO.getStudentId())).findFirst();
+        Optional<StudentDTO> studentDTO1 = students.stream().filter(stu-> stu.getStudentId().equals(studentDTO.getStudentId())).findFirst();
         StudentDTO updatedStudent = studentDTO1.orElse(null);
-        updatedStudent.setFirstName(studentDTO.getFirstName());
-        students.add(1,studentDTO);
+        if (updatedStudent != null) {
+            updatedStudent.setLastName(studentDTO.getLastName());
+            // Replace this line:
+            // students.add(0, studentDTO);
+
+            // With this line:
+            students.replaceAll(s -> s.getStudentId().equals(studentDTO.getStudentId()) ? updatedStudent : s);
+        }
         return updatedStudent;
     }
 
@@ -40,9 +53,4 @@ public class StudentRepository {
         students.remove(studentDTO);
         return studentDTO;
     }
-
-    public List<StudentDTO> getStudentsByParam(Integer age) {
-        return students.stream().filter(stu-> Objects.equals(stu.getAge(),age)).toList();
-    }
-
 }

@@ -14,7 +14,7 @@ import java.util.List;
 public class StudentController {
 
     @Autowired
-    private StudentService  studentService;
+    private StudentService studentService;
 
     @PostMapping()
     public ResponseEntity<StudentDTO> createStudent(@RequestBody StudentDTO studentDTO) {
@@ -23,14 +23,8 @@ public class StudentController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<StudentDTO>> getAllStudents(){
-        List<StudentDTO> studentDTOS = studentService.getAllStudents();
-        return new ResponseEntity<>(studentDTOS, HttpStatus.OK);
-    }
-
-    @GetMapping()
-    public ResponseEntity<List<StudentDTO>> getStudentsByParam(@RequestParam(required = true) Integer age){
-        List<StudentDTO> studentDTOS = studentService.getStudentsByParam(age);
+    public ResponseEntity<List<StudentDTO>> getAllStudents(@RequestParam(required = false) Integer age){
+        List<StudentDTO> studentDTOS = studentService.getAllStudents(age);
         return new ResponseEntity<>(studentDTOS, HttpStatus.OK);
     }
 
@@ -40,16 +34,16 @@ public class StudentController {
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
-
-    @PutMapping
-    public ResponseEntity<StudentDTO> updateStudent(@RequestBody StudentDTO studentDTO){
-        StudentDTO student = studentService.updateStudentById(studentDTO);
+    @PutMapping()
+    public ResponseEntity<StudentDTO> updateStudent(@RequestBody StudentDTO studentDTO) {
+        studentService.updateStudentById(studentDTO);
         return new ResponseEntity<>(studentDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<StudentDTO> deleteStudent(@PathVariable Integer id){
-        StudentDTO student = studentService.deleteStudentByid(id);
+        StudentDTO student = studentService.deleteStudentById(id);
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
+
 }

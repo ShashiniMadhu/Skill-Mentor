@@ -10,7 +10,6 @@ import java.util.List;
 
 @Service
 public class StudentServiceImpl implements StudentService {
-
     @Autowired
     StudentRepository studentRepository;
 
@@ -21,8 +20,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<StudentDTO> getAllStudents() {
-        return studentRepository.getAllStudents();
+    public List<StudentDTO> getAllStudents(Integer age) {
+        return studentRepository.getAllStudents(age);
     }
 
     @Override
@@ -36,13 +35,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDTO deleteStudentByid(Integer id) {
+    public StudentDTO deleteStudentById(Integer id) {
         return studentRepository.deleteStudentById(id);
     }
-
-    @Override
-    public List<StudentDTO> getStudentsByParam(Integer age) {
-        return studentRepository.getStudentsByParam(age);
-    }
-
 }
