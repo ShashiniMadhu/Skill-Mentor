@@ -1,4 +1,4 @@
-package com.skill_mentor.root.skill_mentor_root.DAO;
+package com.skill_mentor.root.skill_mentor_root.dao;
 
 import com.skill_mentor.root.skill_mentor_root.dto.StudentDTO;
 
