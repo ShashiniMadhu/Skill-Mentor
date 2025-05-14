@@ -17,9 +17,9 @@ public class StudentRepository {
         return studentDTO;
     }
 
-    public List<StudentDTO> getAllStudents(Integer age) {
-        return students.stream().filter(stu->age == null || stu.getAge().equals(age)).toList();
-    }
+//    public List<StudentDTO> getAllStudents() {
+//        return students.stream().filter(stu->age == null || stu.getAge().equals(age)).toList();
+//    }
 
     public StudentDTO getStudentById(Integer id){
         Optional<StudentDTO> studentDTOOptional  = students.stream().filter(stu-> Objects.equals(stu.getStudentId(), id)).findFirst();

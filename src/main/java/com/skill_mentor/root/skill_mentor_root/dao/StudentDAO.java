@@ -19,7 +19,7 @@ public interface StudentDAO {
      * @param age the age to filter students by (optional)
      * @return a list of StudentDTO objects representing the students
      */
-    List<StudentDTO> getAllStudents(Integer age);
+    List<StudentDTO> getAllStudents();
 
     /**
      * Retrieves a student by their ID.
