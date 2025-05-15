@@ -20,12 +20,11 @@ public interface StudentService {
     StudentDTO createStudent(StudentDTO studentDTO);
 
     /**
-     * Retrieves all students, optionally filtered by age.
+     * Retrieves all students, optionally filtered by age, firstName, address
      *
-     * @param age the age to filter students by (optional)
      * @return a list of StudentDTO objects representing the students
      */
-    List<StudentDTO> getAllStudents(Integer age);
+    List<StudentDTO> getAllStudents(List<String> addresses,Integer age);
 
     /**
      * Retrieves a student by their ID.

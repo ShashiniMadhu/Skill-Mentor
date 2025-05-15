@@ -18,13 +18,17 @@ public class StudentController {
 
     @PostMapping()
     public ResponseEntity<StudentDTO> createStudent(@RequestBody StudentDTO studentDTO) {
-        studentService.createStudent(studentDTO);
-        return new ResponseEntity<>(studentDTO, HttpStatus.OK);
+        StudentDTO savedDTO = studentService.createStudent(studentDTO);
+        return new ResponseEntity<>(savedDTO, HttpStatus.OK);
     }
 
     @GetMapping()
-    public ResponseEntity<List<StudentDTO>> getAllStudents(@RequestParam(required = false) Integer age){
-        List<StudentDTO> studentDTOS = studentService.getAllStudents(age);
+    public ResponseEntity<List<StudentDTO>> getAllStudents(
+            //@RequestParam(required = false)String address,
+            @RequestParam(required = false)List<String> addresses,//when filter from multiple addresses
+            @RequestParam(required = false)Integer age
+    ) {
+        List<StudentDTO> studentDTOS = studentService.getAllStudents(addresses,age);
         return new ResponseEntity<>(studentDTOS, HttpStatus.OK);
     }
 
