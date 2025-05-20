@@ -1,8 +1,6 @@
 package com.skill_mentor.root.skill_mentor_root.mapper;
 
-import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.StudentDTO;
-import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.StudentEntity;
 
 public class StudentEntityDTOMapper {
