@@ -1,21 +1,49 @@
-package com.skill_mentor.root.skill_mentor_root.dto;
+package com.skill_mentor.root.skill_mentor_root.entity;
 
-public class MentorDTO {
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name="mentor")
+public class MentorEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "mentor_id")
     private Integer mentorId;
+
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "address")
     private String address;
+
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "title")
     private String title;
+
+    @Column(name = "profession")
     private String profession;
+
+    @Column(name = "subject")
     private String subject;
+
+    @Column(name = "qualification")
     private String qualification;
-    private Integer classRoomId;
 
-    public MentorDTO() {}
+    @JsonManagedReference
+    @OneToOne(mappedBy = "mentor")
+    private ClassRoomEntity classRoom;
 
-    public MentorDTO(Integer mentorId, String firstName, String lastName, String address, String email,
-                     String title, String profession, String subject, String qualification,Integer classRoomId){
+    public MentorEntity() {}
+
+    public MentorEntity(Integer mentorId, String firstName, String lastName, String address, String email,
+                     String title, String profession, String subject, String qualification){
         this.mentorId = mentorId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -25,7 +53,6 @@ public class MentorDTO {
         this.profession = profession;
         this.subject = subject;
         this.qualification = qualification;
-        this.classRoomId = classRoomId;
     }
 
     public Integer getMentorId() {
@@ -100,11 +127,11 @@ public class MentorDTO {
         this.qualification = qualification;
     }
 
-    public Integer getClassRoomId() {
-        return classRoomId;
+    public ClassRoomEntity getClassRoom() {
+        return classRoom;
     }
 
-    public void setClassRoomId(Integer getClassRoomId) {
-        this.classRoomId = classRoomId;
+    public void setClassRoom(ClassRoomEntity classRoom) {
+        this.classRoom = classRoom;
     }
 }

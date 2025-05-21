@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = " /classroom")
+@RequestMapping(value = "/classroom")
 public class ClassRoomController {
     @Autowired
     private ClassRoomService classroomService;
 
     @PostMapping()
     public ResponseEntity<ClassRoomDTO> createClassroom(@RequestBody ClassRoomDTO classroomDTO) {
-        classroomService.createClassRoom(classroomDTO);
-        return new ResponseEntity<>(classroomDTO, HttpStatus.OK);
+        ClassRoomDTO createdClassroom = classroomService.createClassRoom(classroomDTO);
+        return new ResponseEntity<>(createdClassroom, HttpStatus.OK);
     }
 
     @GetMapping()

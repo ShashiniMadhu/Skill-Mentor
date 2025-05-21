@@ -1,6 +1,9 @@
 package com.skill_mentor.root.skill_mentor_root.repository;
 
 import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
+import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
+import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,42 +12,5 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class ClassRoomRepository {
-    private List<ClassRoomDTO> classRooms = new ArrayList<>();
-
-    public ClassRoomDTO createClassRoom(ClassRoomDTO classRoomDTO) {
-        classRooms.add(classRoomDTO);
-        return classRoomDTO;
-    }
-
-    public List<ClassRoomDTO> getAllClassRooms() {
-        return new ArrayList<>(classRooms);
-    }
-
-    public ClassRoomDTO getClassRoomById(Integer id) {
-        Optional<ClassRoomDTO> classRoomDTOOptional = classRooms.stream()
-                .filter(classRoom -> Objects.equals(classRoom.getClassRoomId(), id))
-                .findFirst();
-        return classRoomDTOOptional.orElse(null);
-    }
-
-    public ClassRoomDTO updateClassRoomById(ClassRoomDTO classRoomDTO) {
-        Optional<ClassRoomDTO> classRoomDTOOptional = classRooms.stream()
-                .filter(classRoom -> Objects.equals(classRoom.getClassRoomId(), classRoomDTO.getClassRoomId()))
-                .findFirst();
-        ClassRoomDTO updatedClassRoom = classRoomDTOOptional.orElse(null);
-        if (updatedClassRoom != null) {
-            updatedClassRoom.setTitle(classRoomDTO.getTitle());
-            updatedClassRoom.setSessionFee(classRoomDTO.getSessionFee());
-        }
-        return updatedClassRoom;
-    }
-
-    public ClassRoomDTO deleteClassRoomById(Integer id) {
-        ClassRoomDTO classRoomDTO = getClassRoomById(id);
-        if (classRoomDTO != null) {
-            classRooms.remove(classRoomDTO);
-        }
-        return classRoomDTO;
-    }
+public interface ClassRoomRepository extends JpaRepository<ClassRoomEntity, Integer> {
 }

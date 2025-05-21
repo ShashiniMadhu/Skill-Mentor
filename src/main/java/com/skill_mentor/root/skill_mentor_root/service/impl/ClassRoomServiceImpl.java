@@ -1,6 +1,10 @@
 package com.skill_mentor.root.skill_mentor_root.service.impl;
 
 import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
+import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
+import com.skill_mentor.root.skill_mentor_root.entity.StudentEntity;
+import com.skill_mentor.root.skill_mentor_root.mapper.ClassRoomEntityDTOMapper;
+import com.skill_mentor.root.skill_mentor_root.mapper.StudentEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
 import com.skill_mentor.root.skill_mentor_root.service.ClassRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,36 +18,43 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     private ClassRoomRepository classRoomRepository;
 
     @Override
+    public ClassRoomDTO createClassRoom(ClassRoomDTO classRoomDTO) {
+        classRoomDTO.setClassRoomId(null);
+        final ClassRoomEntity classRoomEntity = ClassRoomEntityDTOMapper.map(classRoomDTO);
+        final ClassRoomEntity savedEntity = classRoomRepository.save(classRoomEntity);
+        return ClassRoomEntityDTOMapper.map(savedEntity);
+    }
+
+    @Override
     public List<ClassRoomDTO> getAllClassRooms() {
-        return (List<ClassRoomDTO>) classRoomRepository.getAllClassRooms();
+        final List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAll();
+        return classRoomEntities.stream().map(ClassRoomEntityDTOMapper::map).toList(); // without any filter parameter
     }
 
     @Override
     public ClassRoomDTO findClassRoomById(Integer id) {
-        ClassRoomDTO classRoomDTO = classRoomRepository.getClassRoomById(id);
-        if (classRoomDTO == null) {
-            throw new RuntimeException("ClassRoom not found");
-        }
-        return classRoomDTO;
+        Optional <ClassRoomEntity> classRoomEntity = classRoomRepository.findById(id);
+        return classRoomEntity.map(ClassRoomEntityDTOMapper::map).orElse(null);
     }
 
     @Override
     public ClassRoomDTO deleteClassRoomById(Integer id) {
-        ClassRoomDTO classRoomDTO = classRoomRepository.deleteClassRoomById(id);
-        return classRoomDTO;
+        ClassRoomEntity classRoomEntity = classRoomRepository.findById(id).orElse(null);
+        classRoomRepository.deleteById(id);
+        return ClassRoomEntityDTOMapper.map(classRoomEntity);
     }
 
     @Override
     public ClassRoomDTO updateClassRoom(ClassRoomDTO classRoomDTO) {
-        ClassRoomDTO classRoom = classRoomRepository.updateClassRoomById(classRoomDTO);
-        if (classRoom == null) {
+        Optional<ClassRoomEntity> classRoomEntity = classRoomRepository.findById(classRoomDTO.getClassRoomId());
+        if (classRoomEntity.isEmpty()) {
             throw new RuntimeException("ClassRoom not found");
         }
-        return classRoom;
-    }
-
-    @Override
-    public ClassRoomDTO createClassRoom(ClassRoomDTO classRoomDTO) {
-        return classRoomRepository.createClassRoom(classRoomDTO);
+        ClassRoomEntity updatedEntity = classRoomEntity.get();
+        updatedEntity.setTitle(classRoomDTO.getTitle());
+        updatedEntity.setSessionFee(classRoomDTO.getSessionFee());
+        updatedEntity.setEnrolledStudentCount(classRoomDTO.getEnrolledStudentCount());
+        ClassRoomEntity savedEntity = classRoomRepository.save(updatedEntity);
+        return ClassRoomEntityDTOMapper.map(savedEntity);
     }
 }

@@ -1,23 +1,40 @@
-package com.skill_mentor.root.skill_mentor_root.dto;
+package com.skill_mentor.root.skill_mentor_root.entity;
 
-import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 
-public class ClassRoomDTO {
+@Entity
+@Table(name = "classroom")
+public class ClassRoomEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "class_room_id")
     private Integer classRoomId;
-    private String title;
-    private Double sessionFee;
-    private Integer enrolledStudentCount;
-    private MentorDTO mentorId;
 
-    public ClassRoomDTO() {
+    @Column(name = "title")
+    private String title;
+
+    @Column(name = "session_fee")
+    private Double sessionFee;
+
+    @Column(name = "enrolled_student_count")
+    private Integer enrolledStudentCount;
+
+    @JsonBackReference
+    @OneToOne
+    @JoinColumn(name = "mentor_id")
+    private MentorEntity mentor;
+
+    public ClassRoomEntity() {
     }
 
-    public ClassRoomDTO(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorDTO mentorId) {
+    public ClassRoomEntity(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorEntity mentorId) {
         this.classRoomId = classRoomId;
         this.title = name;
         this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
-        this.mentorId = mentorId;
+        this.mentor = mentor;
     }
 
     public Integer getClassRoomId() {
@@ -52,11 +69,12 @@ public class ClassRoomDTO {
         this.enrolledStudentCount = enrolledStudentCount;
     }
 
-    public MentorDTO getMentorId() {
-        return mentorId;
+    public MentorEntity getMentor() {
+        return mentor;
     }
 
-    public void setMentorId(MentorDTO mentorId) {
-        this.mentorId = mentorId;
+    public MentorEntity setMentor(MentorEntity mentorId) {
+        this.mentor = mentorId;
+        return mentorId;
     }
 }
