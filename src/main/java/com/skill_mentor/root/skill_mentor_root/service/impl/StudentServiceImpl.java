@@ -5,6 +5,7 @@ import com.skill_mentor.root.skill_mentor_root.entity.StudentEntity;
 import com.skill_mentor.root.skill_mentor_root.mapper.StudentEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.StudentRepository;
 import com.skill_mentor.root.skill_mentor_root.service.StudentService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,25 @@ public class StudentServiceImpl implements StudentService {
         final StudentEntity savedEntity = studentRepository.save(studentEntity);
         return StudentEntityDTOMapper.map(savedEntity);
     }
+
+//    //Method "createSturdent" works with query method of the repository
+//    @Override
+//    @Transactional
+//    public StudentDTO createStudent(StudentDTO studentDTO) {
+//        // Set studentId to null to ensure a new record is created
+//        studentDTO.setStudentId(null);
+//        // Use the custom saveStudent method
+//        studentRepository.saveStudent(
+//                studentDTO.getFirstName(),
+//                studentDTO.getLastName(),
+//                studentDTO.getEmail(),
+//                studentDTO.getPhoneNumber(),
+//                studentDTO.getAddress(),
+//                studentDTO.getAge()
+//        );
+//        return studentDTO;
+//    }
+
 
     @Override
     public List<StudentDTO> getAllStudents(List<String> addresses,Integer age) {

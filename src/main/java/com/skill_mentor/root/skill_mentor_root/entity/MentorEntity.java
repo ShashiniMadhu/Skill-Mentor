@@ -1,5 +1,6 @@
 package com.skill_mentor.root.skill_mentor_root.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -34,6 +35,10 @@ public class MentorEntity {
 
     @Column(name = "qualification")
     private String qualification;
+
+    @JsonManagedReference
+    @OneToOne(mappedBy = "mentor")
+    private ClassRoomEntity classRoom;
 
     public MentorEntity() {}
 
@@ -120,5 +125,13 @@ public class MentorEntity {
 
     public void setQualification(String qualification) {
         this.qualification = qualification;
+    }
+
+    public ClassRoomEntity getClassRoom() {
+        return classRoom;
+    }
+
+    public void setClassRoom(ClassRoomEntity classRoom) {
+        this.classRoom = classRoom;
     }
 }

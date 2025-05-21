@@ -1,5 +1,6 @@
 package com.skill_mentor.root.skill_mentor_root.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -20,18 +21,20 @@ public class ClassRoomEntity {
     @Column(name = "enrolled_student_count")
     private Integer enrolledStudentCount;
 
-    @Column(name = "mentor_id")
-    private Integer mentorId;
+    @JsonBackReference
+    @OneToOne
+    @JoinColumn(name = "mentor_id")
+    private MentorEntity mentor;
 
     public ClassRoomEntity() {
     }
 
-    public ClassRoomEntity(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, Integer mentorId) {
+    public ClassRoomEntity(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorEntity mentorId) {
         this.classRoomId = classRoomId;
         this.title = name;
         this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
-        this.mentorId = mentorId;
+        this.mentor = mentor;
     }
 
     public Integer getClassRoomId() {
@@ -66,11 +69,12 @@ public class ClassRoomEntity {
         this.enrolledStudentCount = enrolledStudentCount;
     }
 
-    public Integer getMentorId() {
-        return mentorId;
+    public MentorEntity getMentor() {
+        return mentor;
     }
 
-    public void setMentorId(Integer mentorId) {
-        this.mentorId = mentorId;
+    public MentorEntity setMentor(MentorEntity mentorId) {
+        this.mentor = mentorId;
+        return mentorId;
     }
 }
