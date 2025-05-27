@@ -2,9 +2,7 @@ package com.skill_mentor.root.skill_mentor_root.service.impl;
 
 import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
-import com.skill_mentor.root.skill_mentor_root.entity.StudentEntity;
 import com.skill_mentor.root.skill_mentor_root.mapper.ClassRoomEntityDTOMapper;
-import com.skill_mentor.root.skill_mentor_root.mapper.StudentEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
 import com.skill_mentor.root.skill_mentor_root.service.ClassRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +41,19 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         classRoomRepository.deleteById(id);
         return ClassRoomEntityDTOMapper.map(classRoomEntity);
     }
+
+//    @Override
+//    public ClassRoomDTO getClassRoomWithMentor(Integer classRoomId) {
+//        //fetch the classroom entity from the repository
+//        ClassRoomEntity classRoomEntity = classRoomRepository.findById(classRoomId).orElse(null);
+//
+//        if(classRoomEntity != null && classRoomEntity.getMentor() != null){
+//            //Exactly access the mentor property to trigger lazy loading
+//            classRoomEntity.getMentor();
+//        }
+//        ClassRoomDTO classRoomDTO = ClassRoomEntityDTOMapper.map(classRoomEntity);
+//        return classRoomDTO;
+//    }
 
     @Override
     public ClassRoomDTO updateClassRoom(ClassRoomDTO classRoomDTO) {

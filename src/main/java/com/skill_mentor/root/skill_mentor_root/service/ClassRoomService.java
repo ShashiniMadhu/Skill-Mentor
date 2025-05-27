@@ -1,6 +1,7 @@
 package com.skill_mentor.root.skill_mentor_root.service;
 
 import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
+import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -45,8 +46,7 @@ public interface ClassRoomService {
      */
     ClassRoomDTO deleteClassRoomById(Integer id);
 
-
-
+    //public ClassRoomDTO getClassRoomWithMentor(Integer classRoomId);
 
 
 }

@@ -104,7 +104,7 @@ public class MentorDTO {
         return classRoomId;
     }
 
-    public void setClassRoomId(Integer getClassRoomId) {
+    public void setClassRoomId(Integer classRoomId) {
         this.classRoomId = classRoomId;
     }
 }

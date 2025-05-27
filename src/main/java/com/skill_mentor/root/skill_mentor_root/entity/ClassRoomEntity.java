@@ -22,16 +22,16 @@ public class ClassRoomEntity {
     private Integer enrolledStudentCount;
 
     @JsonBackReference
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "mentor_id")
     private MentorEntity mentor;
 
     public ClassRoomEntity() {
     }
 
-    public ClassRoomEntity(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorEntity mentorId) {
+    public ClassRoomEntity(Integer classRoomId, String title, Double sessionFee, Integer enrolledStudentCount, MentorEntity mentorId) {
         this.classRoomId = classRoomId;
-        this.title = name;
+        this.title = title;
         this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
         this.mentor = mentor;
@@ -73,8 +73,7 @@ public class ClassRoomEntity {
         return mentor;
     }
 
-    public MentorEntity setMentor(MentorEntity mentorId) {
+    public void setMentor(MentorEntity mentorId) {
         this.mentor = mentorId;
-        return mentorId;
     }
 }

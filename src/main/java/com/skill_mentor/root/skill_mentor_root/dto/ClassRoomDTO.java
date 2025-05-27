@@ -1,7 +1,5 @@
 package com.skill_mentor.root.skill_mentor_root.dto;
 
-import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
-
 public class ClassRoomDTO {
     private Integer classRoomId;
     private String title;
@@ -12,9 +10,9 @@ public class ClassRoomDTO {
     public ClassRoomDTO() {
     }
 
-    public ClassRoomDTO(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorDTO mentorId) {
+    public ClassRoomDTO(Integer classRoomId, String title, Double sessionFee, Integer enrolledStudentCount, MentorDTO mentorId) {
         this.classRoomId = classRoomId;
-        this.title = name;
+        this.title = title;
         this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
         this.mentorId = mentorId;
