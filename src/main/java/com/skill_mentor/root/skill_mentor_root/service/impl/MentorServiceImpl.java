@@ -1,10 +1,12 @@
 package com.skill_mentor.root.skill_mentor_root.service.impl;
 
 import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
+import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.StudentEntity;
 import com.skill_mentor.root.skill_mentor_root.mapper.MentorEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.mapper.StudentEntityDTOMapper;
+import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.MentorRepository;
 import com.skill_mentor.root.skill_mentor_root.service.MentorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +22,24 @@ public class MentorServiceImpl implements MentorService {
     @Autowired
     MentorRepository mentorRepository;
 
+    @Autowired
+    private ClassRoomRepository classRoomRepository;
+
     @Override
     public MentorDTO createMentor(MentorDTO mentorDTO) {
-        mentorDTO.setMentorId(null);
-        final MentorEntity mentorEntity = MentorEntityDTOMapper.map(mentorDTO);
-        final MentorEntity savedEntity = mentorRepository.save(mentorEntity);
-        return MentorEntityDTOMapper.map(savedEntity);
+        // Step 1: Create and save the mentor first
+        MentorEntity mentorEntity = MentorEntityDTOMapper.map(mentorDTO);
+        MentorEntity savedMentor = mentorRepository.save(mentorEntity);
+        // Step 2: If classRoomId is provided, update the classroom with the saved mentor
+        if (!Objects.isNull(mentorDTO.getClassRoomId())) {
+            Optional<ClassRoomEntity> optionalClassRoomEntity = classRoomRepository.findById(mentorDTO.getClassRoomId());
+            if (optionalClassRoomEntity.isPresent()) {
+                ClassRoomEntity classRoomEntity = optionalClassRoomEntity.get();
+                classRoomEntity.setMentor(savedMentor); // Use the SAVED mentor entity
+                classRoomRepository.save(classRoomEntity);
+            }
+        }
+        return MentorEntityDTOMapper.map(savedMentor);
     }
 
     @Override

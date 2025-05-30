@@ -1,21 +1,25 @@
 package com.skill_mentor.root.skill_mentor_root.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ClassRoomDTO {
     private Integer classRoomId;
     private String title;
     private Double sessionFee;
     private Integer enrolledStudentCount;
-    private Integer mentorId;
+
+    @JsonProperty("mentor") //Rename as your prefer
+    private MentorDTO mentorDTO;
 
     public ClassRoomDTO() {
     }
 
-    public ClassRoomDTO(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, Integer mentorId) {
+    public ClassRoomDTO(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorDTO mentorId) {
         this.classRoomId = classRoomId;
         this.title = name;
         this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
-        this.mentorId = mentorId;
+        this.mentorDTO = mentorId;
     }
 
     public Integer getClassRoomId() {
@@ -50,11 +54,11 @@ public class ClassRoomDTO {
         this.enrolledStudentCount = enrolledStudentCount;
     }
 
-    public Integer getMentorId() {
-        return mentorId;
+    public MentorDTO getMentor() {
+        return mentorDTO;
     }
 
-    public void setMentorId(Integer mentorId) {
-        this.mentorId = mentorId;
+    public void setMentor(MentorDTO mentorId) {
+        this.mentorDTO = mentorId;
     }
 }

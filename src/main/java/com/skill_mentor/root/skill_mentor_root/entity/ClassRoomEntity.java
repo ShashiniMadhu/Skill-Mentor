@@ -20,18 +20,19 @@ public class ClassRoomEntity {
     @Column(name = "enrolled_student_count")
     private Integer enrolledStudentCount;
 
-    @Column(name = "mentor_id")
-    private Integer mentorId;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn (referencedColumnName = "mentor_id")
+    private MentorEntity mentor;
 
     public ClassRoomEntity() {
     }
 
-    public ClassRoomEntity(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, Integer mentorId) {
+    public ClassRoomEntity(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorEntity mentor) {
         this.classRoomId = classRoomId;
         this.title = name;
         this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
-        this.mentorId = mentorId;
+        this.mentor = mentor;
     }
 
     public Integer getClassRoomId() {
@@ -64,13 +65,13 @@ public class ClassRoomEntity {
 
     public void setEnrolledStudentCount(Integer enrolledStudentCount) {
         this.enrolledStudentCount = enrolledStudentCount;
+     }
+
+    public MentorEntity getMentor() {
+        return mentor;
     }
 
-    public Integer getMentorId() {
-        return mentorId;
-    }
-
-    public void setMentorId(Integer mentorId) {
-        this.mentorId = mentorId;
+    public void setMentor(MentorEntity mentor) {
+        this.mentor = mentor;
     }
 }

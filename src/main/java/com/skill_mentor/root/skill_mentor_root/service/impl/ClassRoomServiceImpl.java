@@ -1,9 +1,11 @@
 package com.skill_mentor.root.skill_mentor_root.service.impl;
 
 import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
+import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.StudentEntity;
 import com.skill_mentor.root.skill_mentor_root.mapper.ClassRoomEntityDTOMapper;
+import com.skill_mentor.root.skill_mentor_root.mapper.MentorEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.mapper.StudentEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
 import com.skill_mentor.root.skill_mentor_root.service.ClassRoomService;
@@ -27,8 +29,17 @@ public class ClassRoomServiceImpl implements ClassRoomService {
 
     @Override
     public List<ClassRoomDTO> getAllClassRooms() {
-        final List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAll();
-        return classRoomEntities.stream().map(ClassRoomEntityDTOMapper::map).toList(); // without any filter parameter
+        List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAll();
+        return classRoomEntities.stream().map(
+                entity->{
+                    ClassRoomDTO classRoomDTO = ClassRoomEntityDTOMapper.map(entity);
+                    if(!Objects.isNull(entity.getMentor())){
+                        MentorDTO mentorDTO = MentorEntityDTOMapper.map(entity.getMentor());
+                        classRoomDTO.setMentor(mentorDTO); // You're also missing this assignment
+                    }
+                    return classRoomDTO;
+                }
+        ).toList();
     }
 
     @Override
