@@ -12,6 +12,8 @@ public class ClassRoomEntityDTOMapper {
         classRoomDTO.setTitle(classRoomEntity.getTitle());
         classRoomDTO.setSessionFee(classRoomEntity.getSessionFee());
         classRoomDTO.setEnrolledStudentCount(classRoomEntity.getEnrolledStudentCount());
+
+        //commented out cuz , mapping occurs at service layer
 //        if (classRoomEntity.getMentor() != null) {
 //            MentorDTO mentorDTO = MentorEntityDTOMapper.map(classRoomEntity.getMentor());
 //            classRoomDTO.setMentor(mentorDTO);
@@ -25,6 +27,9 @@ public class ClassRoomEntityDTOMapper {
         classRoomEntity.setTitle(classRoomDTO.getTitle());
         classRoomEntity.setSessionFee(classRoomDTO.getSessionFee());
         classRoomEntity.setEnrolledStudentCount(classRoomDTO.getEnrolledStudentCount());
+
+        //commented out cuz , mapping occurs at service layer
+
 //        if (classRoomDTO.getMentor() != null) {
 //            MentorEntity mentorEntity = MentorEntityDTOMapper.map(classRoomDTO.getMentor());
 //            classRoomEntity.setMentor(mentorEntity);

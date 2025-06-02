@@ -2,24 +2,30 @@ package com.skill_mentor.root.skill_mentor_root.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class ClassRoomDTO {
     private Integer classRoomId;
     private String title;
     private Double sessionFee;
     private Integer enrolledStudentCount;
 
-    @JsonProperty("mentor") //Rename as your prefer
-    private MentorDTO mentorDTO;
+//    @JsonProperty("mentor") //Rename as your prefer
+//    private MentorDTO mentorDTO;
+
+    //one to many example
+    private List<MentorDTO> mentorDTOList;
 
     public ClassRoomDTO() {
     }
 
-    public ClassRoomDTO(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorDTO mentorId) {
+    public ClassRoomDTO(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, List<MentorDTO> mentorDTOList) {
         this.classRoomId = classRoomId;
         this.title = name;
         this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
-        this.mentorDTO = mentorId;
+        //this.mentorDTO = mentorId;
+        this.mentorDTOList = mentorDTOList;
     }
 
     public Integer getClassRoomId() {
@@ -54,11 +60,20 @@ public class ClassRoomDTO {
         this.enrolledStudentCount = enrolledStudentCount;
     }
 
-    public MentorDTO getMentor() {
-        return mentorDTO;
+//    public MentorDTO getMentor() {
+//        return mentorDTO;
+//    }
+//
+//    public void setMentor(MentorDTO mentorId) {
+//        this.mentorDTO = mentorId;
+//    }
+
+
+    public List<MentorDTO> getMentorDTOList() {
+        return mentorDTOList;
     }
 
-    public void setMentor(MentorDTO mentorId) {
-        this.mentorDTO = mentorId;
+    public void setMentorDTOList(List<MentorDTO> mentorDTOList) {
+        this.mentorDTOList = mentorDTOList;
     }
 }

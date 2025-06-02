@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassRoomServiceImpl implements ClassRoomService {
@@ -27,19 +28,35 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         return ClassRoomEntityDTOMapper.map(savedEntity);
     }
 
+//    @Override
+//    public List<ClassRoomDTO> getAllClassRooms() {
+//        List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAll();
+//        return classRoomEntities.stream().map(
+//                entity->{
+//                    ClassRoomDTO classRoomDTO = ClassRoomEntityDTOMapper.map(entity);
+//                    if(!Objects.isNull(entity.getMentor())){
+//                        MentorDTO mentorDTO = MentorEntityDTOMapper.map(entity.getMentor());
+//                        classRoomDTO.setMentor(mentorDTO);
+//                    }
+//                    return classRoomDTO;
+//                }
+//        ).toList();
+//    }
+
+    //one to many example of classroom and mentor
     @Override
-    public List<ClassRoomDTO> getAllClassRooms() {
+    public List<ClassRoomDTO> getAllClassRooms(){
         List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAll();
         return classRoomEntities.stream().map(
-                entity->{
+                entity->{ // This lambda expression is a Java 8+ syntax element
                     ClassRoomDTO classRoomDTO = ClassRoomEntityDTOMapper.map(entity);
-                    if(!Objects.isNull(entity.getMentor())){
-                        MentorDTO mentorDTO = MentorEntityDTOMapper.map(entity.getMentor());
-                        classRoomDTO.setMentor(mentorDTO); // You're also missing this assignment
-                    }
+                    List<MentorDTO> mentorDTOS = entity.getMentorEntityList().stream()
+                            .map(MentorEntityDTOMapper::map)
+                            .collect(Collectors.toList());
+                    classRoomDTO.setMentorDTOList(mentorDTOS);
                     return classRoomDTO;
                 }
-        ).toList();
+        ).collect(Collectors.toList());
     }
 
     @Override

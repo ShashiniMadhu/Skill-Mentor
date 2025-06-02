@@ -12,10 +12,13 @@ public class MentorDTO {
     private String qualification;
     private Integer classRoomId;
 
+    //one to may example
+    private ClassRoomDTO classRoomDTO;
+
     public MentorDTO() {}
 
     public MentorDTO(Integer mentorId, String firstName, String lastName, String address, String email,
-                     String title, String profession, String subject, String qualification, Integer classRoomId){
+                     String title, String profession, String subject, String qualification, ClassRoomDTO classRoomDTO,Integer classRoomId){
         this.mentorId = mentorId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -26,6 +29,7 @@ public class MentorDTO {
         this.subject = subject;
         this.qualification = qualification;
         this.classRoomId = classRoomId;
+        this.classRoomDTO = classRoomDTO;
     }
 
     public Integer getMentorId() {
@@ -108,4 +112,11 @@ public class MentorDTO {
         this.classRoomId = classRoomId;
     }
     
+    public void setClassRoomDTO(ClassRoomDTO classRoomDTO) {
+        this.classRoomDTO = classRoomDTO;
+    }
+
+    public ClassRoomDTO getClassRoomDTO() {
+        return classRoomDTO;
+    }
 }
