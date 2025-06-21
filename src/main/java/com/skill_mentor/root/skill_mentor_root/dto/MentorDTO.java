@@ -1,5 +1,8 @@
 package com.skill_mentor.root.skill_mentor_root.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MentorDTO {
     private Integer mentorId;
     private String firstName;
@@ -12,13 +15,17 @@ public class MentorDTO {
     private String qualification;
     private Integer classRoomId;
 
-    //one to many example
-    private ClassRoomDTO classRoomDTO;
+//    //one to many example
+//    private ClassRoomDTO classRoomDTO;
+
+    //many to many example
+    private List<ClassRoomDTO> classRoomDTOList;
+    private List<Integer> classRoomIds = new ArrayList<>();
 
     public MentorDTO() {}
 
     public MentorDTO(Integer mentorId, String firstName, String lastName, String address, String email,
-                     String title, String profession, String subject, String qualification, ClassRoomDTO classRoomDTO,Integer classRoomId){
+                     String title, String profession, String subject, String qualification,List<ClassRoomDTO> classRoomDTOList,List<Integer> classRoomIds){
         this.mentorId = mentorId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -28,8 +35,12 @@ public class MentorDTO {
         this.profession = profession;
         this.subject = subject;
         this.qualification = qualification;
-        this.classRoomId = classRoomId;
-        this.classRoomDTO = classRoomDTO;
+        //one to many
+//        this.classRoomId = classRoomId;
+//        this.classRoomDTO = classRoomDTO;
+        //many to many
+        this.classRoomDTOList = classRoomDTOList;
+        this.classRoomIds = classRoomIds;
     }
 
     public Integer getMentorId() {
@@ -104,19 +115,38 @@ public class MentorDTO {
         this.qualification = qualification;
     }
 
-    public Integer getClassRoomId() {
-        return classRoomId;
+//    //one to many example
+//    public Integer getClassRoomId() {
+//        return classRoomId;
+//    }
+//
+//    public void setClassRoomId(Integer classRoomId) {
+//        this.classRoomId = classRoomId;
+//    }
+//
+//    public void setClassRoomDTO(ClassRoomDTO classRoomDTO) {
+//        this.classRoomDTO = classRoomDTO;
+//    }
+//
+//    public ClassRoomDTO getClassRoomDTO() {
+//        return classRoomDTO;
+//    }
+
+    //many to many
+
+    public List<ClassRoomDTO> getClassRoomDTOList() {
+        return classRoomDTOList;
     }
 
-    public void setClassRoomId(Integer classRoomId) {
-        this.classRoomId = classRoomId;
-    }
-    
-    public void setClassRoomDTO(ClassRoomDTO classRoomDTO) {
-        this.classRoomDTO = classRoomDTO;
+    public void setClassRoomDTOList(List<ClassRoomDTO> classRoomDTOList) {
+        this.classRoomDTOList = classRoomDTOList;
     }
 
-    public ClassRoomDTO getClassRoomDTO() {
-        return classRoomDTO;
+    public List<Integer> getClassRoomIds() {
+        return classRoomIds;
+    }
+
+    public void setClassRoomIds(List<Integer> classRoomIds) {
+        this.classRoomIds = classRoomIds;
     }
 }

@@ -1,5 +1,6 @@
 package com.skill_mentor.root.skill_mentor_root.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -27,8 +28,18 @@ public class ClassRoomEntity {
 //    @JoinColumn (referencedColumnName = "mentor_id")
 //    private MentorEntity mentor;
 
-    //one to many mapping example
-    @OneToMany(mappedBy = "classRoomEntity",fetch = FetchType.EAGER)
+//    //one to many mapping example
+//    @OneToMany(mappedBy = "classRoomEntity",fetch = FetchType.EAGER)
+//    private List<MentorEntity> mentorEntityList = new ArrayList<>();
+
+    //many to many example
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name="mentor_classroom",
+            joinColumns = @JoinColumn(name="class_room_id"),
+            inverseJoinColumns = @JoinColumn(name="mentor_id")
+    )
+    @JsonIgnore
     private List<MentorEntity> mentorEntityList = new ArrayList<>();
 
     public ClassRoomEntity() {

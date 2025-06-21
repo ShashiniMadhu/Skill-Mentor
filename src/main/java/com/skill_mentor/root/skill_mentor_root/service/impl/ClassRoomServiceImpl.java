@@ -3,10 +3,9 @@ package com.skill_mentor.root.skill_mentor_root.service.impl;
 import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
-import com.skill_mentor.root.skill_mentor_root.entity.StudentEntity;
+import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 import com.skill_mentor.root.skill_mentor_root.mapper.ClassRoomEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.mapper.MentorEntityDTOMapper;
-import com.skill_mentor.root.skill_mentor_root.mapper.StudentEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
 import com.skill_mentor.root.skill_mentor_root.service.ClassRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +19,42 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     @Autowired
     private ClassRoomRepository classRoomRepository;
 
+//    //one to many
+//    @Override
+//    public ClassRoomDTO createClassRoom(ClassRoomDTO classRoomDTO) {
+//        classRoomDTO.setClassRoomId(null);
+//        final ClassRoomEntity classRoomEntity = ClassRoomEntityDTOMapper.map(classRoomDTO);
+//        final ClassRoomEntity savedEntity = classRoomRepository.save(classRoomEntity);
+//        return ClassRoomEntityDTOMapper.map(savedEntity);
+//    }
+
+    //many to many
     @Override
     public ClassRoomDTO createClassRoom(ClassRoomDTO classRoomDTO) {
         classRoomDTO.setClassRoomId(null);
-        final ClassRoomEntity classRoomEntity = ClassRoomEntityDTOMapper.map(classRoomDTO);
-        final ClassRoomEntity savedEntity = classRoomRepository.save(classRoomEntity);
-        return ClassRoomEntityDTOMapper.map(savedEntity);
+        ClassRoomEntity classRoomEntity = ClassRoomEntityDTOMapper.map(classRoomDTO);
+
+        // Fix: Add null check before accessing the list
+        if(classRoomDTO.getMentorDTOList() != null && !classRoomDTO.getMentorDTOList().isEmpty()) {
+            List<MentorEntity> mentorEntities = classRoomDTO.getMentorDTOList().stream()
+                    .map(MentorEntityDTOMapper::map)
+                    .collect(Collectors.toList());
+            classRoomEntity.setMentorEntityList(mentorEntities);
+        }
+
+        ClassRoomEntity savedEntity = classRoomRepository.save(classRoomEntity);
+        ClassRoomDTO returnedClassRoomDTO = ClassRoomEntityDTOMapper.map(savedEntity);
+
+        // Fix: Add null check here as well
+        if(savedEntity.getMentorEntityList() != null && !savedEntity.getMentorEntityList().isEmpty()){
+            List<MentorDTO> mentorDTOS = savedEntity.getMentorEntityList().stream()
+                    .map(MentorEntityDTOMapper::map)
+                    .collect(Collectors.toList());
+            returnedClassRoomDTO.setMentorDTOList(mentorDTOS);
+        }
+
+        // Fix: Return the properly mapped DTO, not a new mapping
+        return returnedClassRoomDTO;
     }
 
 //    @Override
@@ -43,17 +72,36 @@ public class ClassRoomServiceImpl implements ClassRoomService {
 //        ).toList();
 //    }
 
-    //one to many example of classroom and mentor
+//    //one to many example of classroom and mentor
+//    @Override
+//    public List<ClassRoomDTO> getAllClassRooms(){
+//        List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAll();
+//        return classRoomEntities.stream().map(
+//                entity->{ // This lambda expression is a Java 8+ syntax element
+//                    ClassRoomDTO classRoomDTO = ClassRoomEntityDTOMapper.map(entity);
+//                    List<MentorDTO> mentorDTOS = entity.getMentorEntityList().stream()
+//                            .map(MentorEntityDTOMapper::map)
+//                            .collect(Collectors.toList());
+//                    classRoomDTO.setMentorDTOList(mentorDTOS);
+//                    return classRoomDTO;
+//                }
+//        ).collect(Collectors.toList());
+//    }
+
+    //many to many
     @Override
     public List<ClassRoomDTO> getAllClassRooms(){
         List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAll();
         return classRoomEntities.stream().map(
-                entity->{ // This lambda expression is a Java 8+ syntax element
+                entity->{
                     ClassRoomDTO classRoomDTO = ClassRoomEntityDTOMapper.map(entity);
-                    List<MentorDTO> mentorDTOS = entity.getMentorEntityList().stream()
-                            .map(MentorEntityDTOMapper::map)
-                            .collect(Collectors.toList());
-                    classRoomDTO.setMentorDTOList(mentorDTOS);
+                    // Add null check for safety
+                    if(entity.getMentorEntityList() != null) {
+                        List<MentorDTO> mentorDTOS = entity.getMentorEntityList().stream()
+                                .map(MentorEntityDTOMapper::map)
+                                .collect(Collectors.toList());
+                        classRoomDTO.setMentorDTOList(mentorDTOS);
+                    }
                     return classRoomDTO;
                 }
         ).collect(Collectors.toList());
@@ -64,6 +112,27 @@ public class ClassRoomServiceImpl implements ClassRoomService {
 //        Optional <ClassRoomEntity> classRoomEntity = classRoomRepository.findById(id);
 //        return classRoomEntity.map(ClassRoomEntityDTOMapper::map).orElse(null);
 //    }
+
+//    //one to many
+//    @Override
+//    public ClassRoomDTO findClassRoomById(Integer id) {
+//        Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(id);
+//        if (classRoomEntityOpt.isPresent()) {
+//            ClassRoomEntity entity = classRoomEntityOpt.get();
+//            ClassRoomDTO classRoomDTO = ClassRoomEntityDTOMapper.map(entity);
+//
+//            // FIX: Include mentor list mapping
+//            List<MentorDTO> mentorDTOS = entity.getMentorEntityList().stream()
+//                    .map(MentorEntityDTOMapper::map)
+//                    .collect(Collectors.toList());
+//            classRoomDTO.setMentorDTOList(mentorDTOS);
+//
+//            return classRoomDTO;
+//        }
+//        return null;
+//    }
+
+    //many to many
     @Override
     public ClassRoomDTO findClassRoomById(Integer id) {
         Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(id);
@@ -71,11 +140,13 @@ public class ClassRoomServiceImpl implements ClassRoomService {
             ClassRoomEntity entity = classRoomEntityOpt.get();
             ClassRoomDTO classRoomDTO = ClassRoomEntityDTOMapper.map(entity);
 
-            // FIX: Include mentor list mapping
-            List<MentorDTO> mentorDTOS = entity.getMentorEntityList().stream()
-                    .map(MentorEntityDTOMapper::map)
-                    .collect(Collectors.toList());
-            classRoomDTO.setMentorDTOList(mentorDTOS);
+            // Add null check for safety
+            if(entity.getMentorEntityList() != null) {
+                List<MentorDTO> mentorDTOS = entity.getMentorEntityList().stream()
+                        .map(MentorEntityDTOMapper::map)
+                        .collect(Collectors.toList());
+                classRoomDTO.setMentorDTOList(mentorDTOS);
+            }
 
             return classRoomDTO;
         }

@@ -1,6 +1,7 @@
 package com.skill_mentor.root.skill_mentor_root.service;
 
 import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
+import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,9 +9,14 @@ import java.util.List;
 @Service
 public interface MentorService {
 
-    MentorDTO createMentor(MentorDTO mentorDTO);
+    MentorEntity createMentor(MentorDTO mentorDTO);
 
-    List<MentorDTO> getAllMentors(String subject);
+    //one to many
+//    List<MentorDTO> getAllMentors(String subject);
+
+    //many to many
+    List<MentorDTO> getAllMentors(List<String> firstName,List<String> subject);
+
 
     MentorDTO getMentorById(Integer Id);
 

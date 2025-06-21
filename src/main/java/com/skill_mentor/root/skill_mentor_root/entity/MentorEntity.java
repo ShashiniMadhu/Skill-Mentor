@@ -3,6 +3,9 @@ package com.skill_mentor.root.skill_mentor_root.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name="mentor")
 public class MentorEntity {
@@ -40,17 +43,22 @@ public class MentorEntity {
 //    @JsonIgnore
 //    private Integer classRoomId;
 
-    //one to many example
-    @ManyToOne
-    @JoinColumn(name = "class_room_id",referencedColumnName = "class_room_id")
+//    //one to many example
+//    @ManyToOne
+//    @JoinColumn(name = "class_room_id",referencedColumnName = "class_room_id")
+//    @JsonIgnore
+//    private ClassRoomEntity classRoomEntity;
+
+    //many to many example
+    @ManyToMany(mappedBy = "mentorEntityList",fetch = FetchType.EAGER)
     @JsonIgnore
-    private ClassRoomEntity classRoomEntity;
+    private List<ClassRoomEntity> classRoomEntities = new ArrayList<>();
 
 
     public MentorEntity() {}
 
     public MentorEntity(Integer mentorId, String firstName, String lastName, String address, String email,
-                     String title, String profession, String subject, String qualification, ClassRoomEntity classRoomEntity){
+                     String title, String profession, String subject, String qualification,List<ClassRoomEntity> classRoomEntities){
         this.mentorId = mentorId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -61,7 +69,12 @@ public class MentorEntity {
         this.subject = subject;
         this.qualification = qualification;
         //this.classRoomId = classRoomId;
-        this.classRoomEntity = classRoomEntity;
+
+//        //one to many
+//        this.classRoomEntity = classRoomEntity;
+
+        //many to many
+        this.classRoomEntities = classRoomEntities;
     }
 
     public Integer getMentorId() {
@@ -144,12 +157,22 @@ public class MentorEntity {
 //        this.classRoomId = classRoomId;
 //    }
 
+//    //one to many
+//    public ClassRoomEntity getClassRoomEntity() {
+//        return classRoomEntity;
+//    }
+//
+//    public void setClassRoomEntity(ClassRoomEntity classRoomEntity) {
+//        this.classRoomEntity = classRoomEntity;
+//    }
 
-    public ClassRoomEntity getClassRoomEntity() {
-        return classRoomEntity;
+    //many to many
+
+    public List<ClassRoomEntity> getClassRoomEntities() {
+        return classRoomEntities;
     }
 
-    public void setClassRoomEntity(ClassRoomEntity classRoomEntity) {
-        this.classRoomEntity = classRoomEntity;
+    public void setClassRoomEntities(List<ClassRoomEntity> classRoomEntities) {
+        this.classRoomEntities = classRoomEntities;
     }
 }

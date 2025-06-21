@@ -1,8 +1,10 @@
 package com.skill_mentor.root.skill_mentor_root.service.impl;
 
+import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
+import com.skill_mentor.root.skill_mentor_root.mapper.ClassRoomEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.mapper.MentorEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.MentorRepository;
@@ -11,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -40,34 +41,73 @@ public class MentorServiceImpl implements MentorService {
 //        return MentorEntityDTOMapper.map(savedMentor);
 //    }
 
-    //one to many example of Mentor-Classroom
+//    //one to many example of Mentor-Classroom
+//    @Override
+//    public MentorDTO createMentor(MentorDTO mentorDTO) {
+//        // Map DTO to Entity
+//        MentorEntity mentorEntity = MentorEntityDTOMapper.map(mentorDTO);
+//        // Set classroom relationship if classRoomId is provided
+//        if (mentorDTO.getClassRoomId() != null) {
+//            Optional<ClassRoomEntity> optionalClassRoomEntity = classRoomRepository.findById(mentorDTO.getClassRoomId());
+//            if (optionalClassRoomEntity.isPresent()) {
+//                ClassRoomEntity classRoomEntity = optionalClassRoomEntity.get();
+//                mentorEntity.setClassRoomEntity(classRoomEntity);
+//            } else {
+//                throw new RuntimeException("ClassRoom with ID " + mentorDTO.getClassRoomId() + " not found");
+//            }
+//        }
+//        // Save the mentor entity
+//        MentorEntity savedEntity = mentorRepository.save(mentorEntity);
+//        // Return mapped DTO
+//        return MentorEntityDTOMapper.map(savedEntity);
+//    }
+
+    //many to many example
     @Override
-    public MentorDTO createMentor(MentorDTO mentorDTO) {
-        // Map DTO to Entity
+    public MentorEntity createMentor(MentorDTO mentorDTO){
         MentorEntity mentorEntity = MentorEntityDTOMapper.map(mentorDTO);
-        // Set classroom relationship if classRoomId is provided
-        if (mentorDTO.getClassRoomId() != null) {
-            Optional<ClassRoomEntity> optionalClassRoomEntity = classRoomRepository.findById(mentorDTO.getClassRoomId());
-            if (optionalClassRoomEntity.isPresent()) {
-                ClassRoomEntity classRoomEntity = optionalClassRoomEntity.get();
-                mentorEntity.setClassRoomEntity(classRoomEntity);
-            } else {
-                throw new RuntimeException("ClassRoom with ID " + mentorDTO.getClassRoomId() + " not found");
+        if(mentorDTO.getClassRoomIds().size()>0){
+            List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAllById(mentorDTO.getClassRoomIds());
+            if(classRoomEntities.size()>0){
+                mentorEntity.setClassRoomEntities(classRoomEntities);
             }
         }
-        // Save the mentor entity
         MentorEntity savedEntity = mentorRepository.save(mentorEntity);
-        // Return mapped DTO
-        return MentorEntityDTOMapper.map(savedEntity);
+        MentorDTO savedMentorDTO = MentorEntityDTOMapper.map(savedEntity);
+        if(savedEntity.getClassRoomEntities().size()>0){
+            List<ClassRoomDTO> savedDTOs = savedEntity.getClassRoomEntities().stream().map(ClassRoomEntityDTOMapper::map).toList();
+            savedMentorDTO.setClassRoomDTOList(savedDTOs);
+            for(ClassRoomDTO classRoomDTO:savedMentorDTO.getClassRoomDTOList()){
+                ClassRoomEntity classRoomEntity = classRoomRepository.findById(classRoomDTO.getClassRoomId()).orElse(null);
+                if(classRoomEntity != null){
+                    classRoomEntity.getMentorEntityList().add(savedEntity);
+                    classRoomRepository.save(classRoomEntity);
+                }
+            }
+        }
+        return savedEntity;
     }
 
+//    //one to many
+//    @Override
+//    public List<MentorDTO> getAllMentors(String subject) {
+//        final List<MentorEntity> mentorEntities = mentorRepository.findAll();
+//        return mentorEntities.stream()
+//                .filter(mentor->subject == null || Objects.equals(subject,mentor.getSubject()))
+//                .map(MentorEntityDTOMapper::map)
+//                .toList();
+//    }
+
+    //many to many
     @Override
-    public List<MentorDTO> getAllMentors(String subject) {
-        final List<MentorEntity> mentorEntities = mentorRepository.findAll();
-        return mentorEntities.stream()
-                .filter(mentor->subject == null || Objects.equals(subject,mentor.getSubject()))
-                .map(MentorEntityDTOMapper::map)
-                .toList();
+    public List<MentorDTO> getAllMentors(List<String> firstNames,List<String> subjects){
+        List<MentorEntity> mentorEntities = mentorRepository.findAll();
+        return mentorEntities.stream().map(entity->{
+            List<ClassRoomDTO> classRoomDTOS = entity.getClassRoomEntities().stream().map(ClassRoomEntityDTOMapper::map).toList();
+            MentorDTO mentorDTO = MentorEntityDTOMapper.map(entity);
+            mentorDTO.setClassRoomDTOList(classRoomDTOS);
+            return mentorDTO;
+        }).toList();
     }
 
     @Override
@@ -97,28 +137,28 @@ public class MentorServiceImpl implements MentorService {
     //one to many example of Mentor-Classroom
     @Override
     public MentorDTO updateMentorById(MentorDTO mentorDTO) {
-        Optional<MentorEntity> mentorEntityOptional = mentorRepository.findById(mentorDTO.getMentorId());
-        if(mentorEntityOptional.isPresent()){
-            MentorEntity mentorEntity = mentorEntityOptional.get();
-            mentorEntity.setFirstName(mentorDTO.getFirstName());
-            mentorEntity.setLastName(mentorDTO.getLastName());
-            mentorEntity.setAddress(mentorDTO.getAddress());
-            mentorEntity.setEmail(mentorDTO.getEmail());
-            mentorEntity.setTitle(mentorDTO.getTitle());
-            mentorEntity.setProfession(mentorDTO.getProfession());
-            mentorEntity.setSubject(mentorDTO.getSubject());
-            mentorEntity.setQualification(mentorDTO.getQualification());
-            ClassRoomEntity classRoomEntity = null;
-            if(mentorDTO.getClassRoomId() != null){
-                Optional<ClassRoomEntity> optionalClassRoomEntity = classRoomRepository.findById(mentorDTO.getClassRoomId());
-                if (optionalClassRoomEntity.isPresent()) {
-                    classRoomEntity = optionalClassRoomEntity.get();
-                }
-            }
-            mentorEntity.setClassRoomEntity(classRoomEntity);
-            MentorEntity updatedMentor = mentorRepository.save(mentorEntity);
-            return MentorEntityDTOMapper.map(updatedMentor);
-        }
+//        Optional<MentorEntity> mentorEntityOptional = mentorRepository.findById(mentorDTO.getMentorId());
+//        if(mentorEntityOptional.isPresent()){
+//            MentorEntity mentorEntity = mentorEntityOptional.get();
+//            mentorEntity.setFirstName(mentorDTO.getFirstName());
+//            mentorEntity.setLastName(mentorDTO.getLastName());
+//            mentorEntity.setAddress(mentorDTO.getAddress());
+//            mentorEntity.setEmail(mentorDTO.getEmail());
+//            mentorEntity.setTitle(mentorDTO.getTitle());
+//            mentorEntity.setProfession(mentorDTO.getProfession());
+//            mentorEntity.setSubject(mentorDTO.getSubject());
+//            mentorEntity.setQualification(mentorDTO.getQualification());
+//            ClassRoomEntity classRoomEntity = null;
+//            if(mentorDTO.getClassRoomId() != null){
+//                Optional<ClassRoomEntity> optionalClassRoomEntity = classRoomRepository.findById(mentorDTO.getClassRoomId());
+//                if (optionalClassRoomEntity.isPresent()) {
+//                    classRoomEntity = optionalClassRoomEntity.get();
+//                }
+//            }
+//            mentorEntity.setClassRoomEntity(classRoomEntity);
+//            MentorEntity updatedMentor = mentorRepository.save(mentorEntity);
+//            return MentorEntityDTOMapper.map(updatedMentor);
+//        }
         return null;
     }
 

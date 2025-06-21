@@ -16,9 +16,10 @@ public class MentorEntityDTOMapper {
         mentorDTO.setSubject(mentorEntity.getSubject());
         mentorDTO.setQualification(mentorEntity.getQualification());
 
-        if (mentorEntity.getClassRoomEntity() != null) {
-            mentorDTO.setClassRoomId(mentorEntity.getClassRoomEntity().getClassRoomId());
-        }
+        //one to many
+//        if (mentorEntity.getClassRoomEntity() != null) {
+//            mentorDTO.setClassRoomId(mentorEntity.getClassRoomEntity().getClassRoomId());
+//        }
 
         return mentorDTO;
     }
