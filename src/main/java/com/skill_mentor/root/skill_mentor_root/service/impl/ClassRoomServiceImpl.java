@@ -59,10 +59,27 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         ).collect(Collectors.toList());
     }
 
+//    @Override
+//    public ClassRoomDTO findClassRoomById(Integer id) {
+//        Optional <ClassRoomEntity> classRoomEntity = classRoomRepository.findById(id);
+//        return classRoomEntity.map(ClassRoomEntityDTOMapper::map).orElse(null);
+//    }
     @Override
     public ClassRoomDTO findClassRoomById(Integer id) {
-        Optional <ClassRoomEntity> classRoomEntity = classRoomRepository.findById(id);
-        return classRoomEntity.map(ClassRoomEntityDTOMapper::map).orElse(null);
+        Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(id);
+        if (classRoomEntityOpt.isPresent()) {
+            ClassRoomEntity entity = classRoomEntityOpt.get();
+            ClassRoomDTO classRoomDTO = ClassRoomEntityDTOMapper.map(entity);
+
+            // FIX: Include mentor list mapping
+            List<MentorDTO> mentorDTOS = entity.getMentorEntityList().stream()
+                    .map(MentorEntityDTOMapper::map)
+                    .collect(Collectors.toList());
+            classRoomDTO.setMentorDTOList(mentorDTOS);
+
+            return classRoomDTO;
+        }
+        return null;
     }
 
     @Override

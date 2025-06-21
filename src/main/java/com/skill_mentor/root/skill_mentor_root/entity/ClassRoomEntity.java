@@ -2,6 +2,7 @@ package com.skill_mentor.root.skill_mentor_root.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,9 +27,9 @@ public class ClassRoomEntity {
 //    @JoinColumn (referencedColumnName = "mentor_id")
 //    private MentorEntity mentor;
 
-    //one to one mapping example
-    @OneToMany(mappedBy = "classRoomEntity")
-    private List<MentorEntity> mentorEntityList;
+    //one to many mapping example
+    @OneToMany(mappedBy = "classRoomEntity",fetch = FetchType.EAGER)
+    private List<MentorEntity> mentorEntityList = new ArrayList<>();
 
     public ClassRoomEntity() {
     }
@@ -81,7 +82,6 @@ public class ClassRoomEntity {
 //    public void setMentor(MentorEntity mentor) {
 //        this.mentor = mentor;
 //    }
-
 
     public List<MentorEntity> getMentorEntityList() {
         return mentorEntityList;

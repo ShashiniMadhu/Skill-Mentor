@@ -15,12 +15,11 @@ public class MentorEntityDTOMapper {
         mentorDTO.setProfession(mentorEntity.getProfession());
         mentorDTO.setSubject(mentorEntity.getSubject());
         mentorDTO.setQualification(mentorEntity.getQualification());
-            //commented out cuz , mapping occurs at service layer
-        //mentorDTO.setClassRoomId(mentorEntity.getClassRoomId());
-        // Set classRoomId if classroom exists
+
         if (mentorEntity.getClassRoomEntity() != null) {
             mentorDTO.setClassRoomId(mentorEntity.getClassRoomEntity().getClassRoomId());
         }
+
         return mentorDTO;
     }
 

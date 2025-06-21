@@ -43,6 +43,7 @@ public class MentorEntity {
     //one to many example
     @ManyToOne
     @JoinColumn(name = "class_room_id",referencedColumnName = "class_room_id")
+    @JsonIgnore
     private ClassRoomEntity classRoomEntity;
 
 

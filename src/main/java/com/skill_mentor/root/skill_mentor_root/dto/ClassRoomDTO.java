@@ -1,7 +1,6 @@
 package com.skill_mentor.root.skill_mentor_root.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassRoomDTO {

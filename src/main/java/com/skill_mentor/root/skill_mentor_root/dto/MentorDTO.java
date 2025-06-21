@@ -12,7 +12,7 @@ public class MentorDTO {
     private String qualification;
     private Integer classRoomId;
 
-    //one to may example
+    //one to many example
     private ClassRoomDTO classRoomDTO;
 
     public MentorDTO() {}
