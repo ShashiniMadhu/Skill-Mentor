@@ -2,6 +2,8 @@ package com.skill_mentor.root.skill_mentor_root.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "classroom")
 public class ClassRoomEntity {
@@ -20,19 +22,25 @@ public class ClassRoomEntity {
     @Column(name = "enrolled_student_count")
     private Integer enrolledStudentCount;
 
+    // One-to-One relationship with Mentor
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn (referencedColumnName = "mentor_id")
+    @JoinColumn(name = "mentor_id", referencedColumnName = "mentor_id")
     private MentorEntity mentor;
+
+    // One-to-Many relationship with Sessions
+    @OneToMany(mappedBy = "classRoomEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<SessionEntity> sessions;
 
     public ClassRoomEntity() {
     }
 
-    public ClassRoomEntity(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorEntity mentor) {
+    public ClassRoomEntity(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorEntity mentor, List<SessionEntity> sessions) {
         this.classRoomId = classRoomId;
         this.title = name;
         this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
         this.mentor = mentor;
+        this.sessions = sessions;
     }
 
     public Integer getClassRoomId() {
@@ -73,5 +81,13 @@ public class ClassRoomEntity {
 
     public void setMentor(MentorEntity mentor) {
         this.mentor = mentor;
+    }
+
+    public List<SessionEntity> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(List<SessionEntity> sessions) {
+        this.sessions = sessions;
     }
 }

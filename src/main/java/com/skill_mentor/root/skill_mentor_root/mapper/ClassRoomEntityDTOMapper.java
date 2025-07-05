@@ -12,10 +12,10 @@ public class ClassRoomEntityDTOMapper {
         classRoomDTO.setTitle(classRoomEntity.getTitle());
         classRoomDTO.setSessionFee(classRoomEntity.getSessionFee());
         classRoomDTO.setEnrolledStudentCount(classRoomEntity.getEnrolledStudentCount());
-//        if (classRoomEntity.getMentor() != null) {
-//            MentorDTO mentorDTO = MentorEntityDTOMapper.map(classRoomEntity.getMentor());
-//            classRoomDTO.setMentor(mentorDTO);
-//        }
+        if (classRoomEntity.getMentor() != null) {
+            MentorDTO mentorDTO = MentorEntityDTOMapper.map(classRoomEntity.getMentor());
+            classRoomDTO.setMentor(mentorDTO);
+        }
         return classRoomDTO;
     }
 
@@ -29,6 +29,12 @@ public class ClassRoomEntityDTOMapper {
 //            MentorEntity mentorEntity = MentorEntityDTOMapper.map(classRoomDTO.getMentor());
 //            classRoomEntity.setMentor(mentorEntity);
 //        }
+        return classRoomEntity;
+    }
+
+    public static ClassRoomEntity map(ClassRoomDTO classRoomDTO, MentorEntity mentorEntity) {
+        ClassRoomEntity classRoomEntity = map(classRoomDTO);
+        classRoomEntity.setMentor(mentorEntity);
         return classRoomEntity;
     }
 }

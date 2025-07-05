@@ -36,14 +36,15 @@ public class MentorEntity {
     @Column(name = "qualification")
     private String qualification;
 
-    @Column(name = "class_room_id")
+    // One-to-One relationship with ClassRoom (mapped by mentor in ClassRoomEntity)
+    @OneToOne(mappedBy = "mentor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private Integer classRoomId;
+    private ClassRoomEntity classRoom;
 
     public MentorEntity() {}
 
     public MentorEntity(Integer mentorId, String firstName, String lastName, String address, String email,
-                     String title, String profession, String subject, String qualification, Integer classRoomId){
+                        String title, String profession, String subject, String qualification) {
         this.mentorId = mentorId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -53,9 +54,9 @@ public class MentorEntity {
         this.profession = profession;
         this.subject = subject;
         this.qualification = qualification;
-        this.classRoomId = classRoomId;
     }
 
+    // Getters and Setters
     public Integer getMentorId() {
         return mentorId;
     }
@@ -128,11 +129,11 @@ public class MentorEntity {
         this.qualification = qualification;
     }
 
-    public Integer getClassRoomId() {
-        return classRoomId;
+    public ClassRoomEntity getClassRoom() {
+        return classRoom;
     }
 
-    public void setClassRoomId(Integer classRoomId) {
-        this.classRoomId = classRoomId;
+    public void setClassRoom(ClassRoomEntity classRoom) {
+        this.classRoom = classRoom;
     }
 }

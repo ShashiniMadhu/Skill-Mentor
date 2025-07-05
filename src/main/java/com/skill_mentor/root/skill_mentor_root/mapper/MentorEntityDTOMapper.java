@@ -4,7 +4,7 @@ import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 
 public class MentorEntityDTOMapper {
-    public static MentorDTO map(MentorEntity mentorEntity){
+    public static MentorDTO map(MentorEntity mentorEntity) {
         MentorDTO mentorDTO = new MentorDTO();
         mentorDTO.setMentorId(mentorEntity.getMentorId());
         mentorDTO.setFirstName(mentorEntity.getFirstName());
@@ -15,11 +15,16 @@ public class MentorEntityDTOMapper {
         mentorDTO.setProfession(mentorEntity.getProfession());
         mentorDTO.setSubject(mentorEntity.getSubject());
         mentorDTO.setQualification(mentorEntity.getQualification());
-        //mentorDTO.setClassRoomId(mentorEntity.getClassRoomId());
+
+        // If you need classRoomId in your DTO, get it from the relationship
+        if (mentorEntity.getClassRoom() != null) {
+            mentorDTO.setClassRoomId(mentorEntity.getClassRoom().getClassRoomId());
+        }
+
         return mentorDTO;
     }
 
-    public static MentorEntity map(MentorDTO mentorDTO){
+    public static MentorEntity map(MentorDTO mentorDTO) {
         MentorEntity mentorEntity = new MentorEntity();
         mentorEntity.setMentorId(mentorDTO.getMentorId());
         mentorEntity.setFirstName(mentorDTO.getFirstName());
@@ -30,7 +35,10 @@ public class MentorEntityDTOMapper {
         mentorEntity.setProfession(mentorDTO.getProfession());
         mentorEntity.setSubject(mentorDTO.getSubject());
         mentorEntity.setQualification(mentorDTO.getQualification());
-        //mentorEntity.setClassRoomId(mentorDTO.getClassRoomId());
+
+        // Note: We don't set classRoom here to avoid circular dependency
+        // The classRoom relationship should be handled in the service layer
+
         return mentorEntity;
     }
 }
