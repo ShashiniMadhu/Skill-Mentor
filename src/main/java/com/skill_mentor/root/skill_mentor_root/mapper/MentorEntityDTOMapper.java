@@ -1,9 +1,15 @@
 package com.skill_mentor.root.skill_mentor_root.mapper;
 
 import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
+import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
+import com.skill_mentor.root.skill_mentor_root.entity.SessionEntity;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MentorEntityDTOMapper {
+
+    // Full mapping with classroom details
     public static MentorDTO map(MentorEntity mentorEntity) {
         MentorDTO mentorDTO = new MentorDTO();
         mentorDTO.setMentorId(mentorEntity.getMentorId());
@@ -21,6 +27,36 @@ public class MentorEntityDTOMapper {
             mentorDTO.setClassRoomId(mentorEntity.getClassRoom().getClassRoomId());
         }
 
+        // Map sessions - avoid circular reference by creating simplified SessionDTOs
+        if (mentorEntity.getSessions() != null && !mentorEntity.getSessions().isEmpty()) {
+            List<SessionDTO> sessionDTOs = mentorEntity.getSessions().stream()
+                    .map(MentorEntityDTOMapper::mapSessionForMentor)
+                    .collect(Collectors.toList());
+            mentorDTO.setSessionDTOs(sessionDTOs);
+        }
+
+        return mentorDTO;
+    }
+
+    // Simplified mapping without classroom details (to avoid circular reference)
+    public static MentorDTO mapWithoutClassRoom(MentorEntity mentorEntity) {
+        MentorDTO mentorDTO = new MentorDTO();
+        mentorDTO.setMentorId(mentorEntity.getMentorId());
+        mentorDTO.setFirstName(mentorEntity.getFirstName());
+        mentorDTO.setLastName(mentorEntity.getLastName());
+        mentorDTO.setAddress(mentorEntity.getAddress());
+        mentorDTO.setEmail(mentorEntity.getEmail());
+        mentorDTO.setTitle(mentorEntity.getTitle());
+        mentorDTO.setProfession(mentorEntity.getProfession());
+        mentorDTO.setSubject(mentorEntity.getSubject());
+        mentorDTO.setQualification(mentorEntity.getQualification());
+
+        // Only set classRoomId, don't map the full classroom object
+        if (mentorEntity.getClassRoom() != null) {
+            mentorDTO.setClassRoomId(mentorEntity.getClassRoom().getClassRoomId());
+        }
+
+        // Don't map sessions to keep it simple
         return mentorDTO;
     }
 
@@ -36,9 +72,25 @@ public class MentorEntityDTOMapper {
         mentorEntity.setSubject(mentorDTO.getSubject());
         mentorEntity.setQualification(mentorDTO.getQualification());
 
-        // Note: We don't set classRoom here to avoid circular dependency
-        // The classRoom relationship should be handled in the service layer
-
         return mentorEntity;
+    }
+
+    // Helper method to map SessionEntity to SessionDTO for mentor (without mentor details to avoid circular reference)
+    private static SessionDTO mapSessionForMentor(SessionEntity sessionEntity) {
+        SessionDTO sessionDTO = new SessionDTO();
+        sessionDTO.setSessionId(sessionEntity.getSessionId());
+        sessionDTO.setStartTime(sessionEntity.getStartTime());
+        sessionDTO.setEndTime(sessionEntity.getEndTime());
+
+        // Use simplified mapping to avoid circular reference
+        if (sessionEntity.getClassRoomEntity() != null) {
+            sessionDTO.setClassRoom(ClassRoomEntityDTOMapper.mapWithoutMentor(sessionEntity.getClassRoomEntity()));
+        }
+
+        if (sessionEntity.getStudentEntity() != null) {
+            sessionDTO.setStudent(StudentEntityDTOMapper.map(sessionEntity.getStudentEntity()));
+        }
+
+        return sessionDTO;
     }
 }

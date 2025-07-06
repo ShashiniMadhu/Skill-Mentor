@@ -2,6 +2,7 @@ package com.skill_mentor.root.skill_mentor_root.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="mentor")
@@ -40,6 +41,11 @@ public class MentorEntity {
     @OneToOne(mappedBy = "mentor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private ClassRoomEntity classRoom;
+
+    // One-to-Many relationship with Sessions
+    @OneToMany(mappedBy = "mentorEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<SessionEntity> sessions;
 
     public MentorEntity() {}
 
@@ -135,5 +141,13 @@ public class MentorEntity {
 
     public void setClassRoom(ClassRoomEntity classRoom) {
         this.classRoom = classRoom;
+    }
+
+    public List<SessionEntity> getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(List<SessionEntity> sessions) {
+        this.sessions = sessions;
     }
 }

@@ -1,6 +1,8 @@
 package com.skill_mentor.root.skill_mentor_root.controller;
+import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.StudentDTO;
 
+import com.skill_mentor.root.skill_mentor_root.service.SessionService;
 import com.skill_mentor.root.skill_mentor_root.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,9 @@ public class StudentController {
 
     @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private SessionService sessionService;
 
     @PostMapping()
     public ResponseEntity<StudentDTO> createStudent(@RequestBody StudentDTO studentDTO) {
@@ -48,6 +53,13 @@ public class StudentController {
     public ResponseEntity<StudentDTO> deleteStudent(@PathVariable Integer id){
         StudentDTO student = studentService.deleteStudentById(id);
         return new ResponseEntity<>(student, HttpStatus.OK);
+    }
+
+    // NEW: Get all sessions for a specific student
+    @GetMapping("/{studentId}/sessions")
+    public ResponseEntity<List<SessionDTO>> getSessionsByStudentId(@PathVariable Integer studentId) {
+        List<SessionDTO> sessions = sessionService.getSessionsByStudentId(studentId);
+        return new ResponseEntity<>(sessions, HttpStatus.OK);
     }
 
 }

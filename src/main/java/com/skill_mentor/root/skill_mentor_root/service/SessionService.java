@@ -1,34 +1,52 @@
 package com.skill_mentor.root.skill_mentor_root.service;
 
-import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface SessionService {
+
     /**
-     * Creates a new session.
+     * Create a new session.
      *
-     * @param sessionDTO the session data transfer object containing session details
-     * @return the created session data transfer object
+     * @param sessionDTO the session details
+     * @return created session
      */
-    public abstract SessionDTO createSession(SessionDTO sessionDTO);
+    SessionDTO createSession(SessionDTO sessionDTO);
 
     /**
-     * Retrieves a session by its ID.
-     * @param sessionId
-     * @return
-     */
-    public abstract SessionDTO getSessionById(Integer sessionId);
-
-    /**
-     * Retrieves all sessions.
+     * Get session by ID.
      *
-     * @return a list of session data transfer objects
+     * @param sessionId the session ID
+     * @return sessionDTO or null if not found
      */
-    public abstract List<SessionDTO> getAllSessions();
+    SessionDTO getSessionById(Integer sessionId);
 
-    public abstract SessionDTO updateSession(SessionDTO sessionDTO);
+    /**
+     * Get all sessions.
+     *
+     * @return list of all sessions
+     */
+    List<SessionDTO> getAllSessions();
 
-    public abstract SessionDTO deleteSessionById(Integer id);
+    /**
+     * Update an existing session.
+     *
+     * @param sessionDTO session with updated data
+     * @return updated session
+     */
+    SessionDTO updateSession(SessionDTO sessionDTO);
+
+    /**
+     * Delete a session by ID.
+     *
+     * @param id session ID
+     * @return deleted session
+     */
+    SessionDTO deleteSessionById(Integer id);
+
+    // NEW: Get all sessions for a specific student
+    List<SessionDTO> getSessionsByStudentId(Integer studentId);
 }

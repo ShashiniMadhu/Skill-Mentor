@@ -6,16 +6,31 @@ import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 
 public class ClassRoomEntityDTOMapper {
+
+    // Full mapping with mentor details
     public static ClassRoomDTO map(ClassRoomEntity classRoomEntity){
         ClassRoomDTO classRoomDTO = new ClassRoomDTO();
         classRoomDTO.setClassRoomId(classRoomEntity.getClassRoomId());
         classRoomDTO.setTitle(classRoomEntity.getTitle());
         classRoomDTO.setSessionFee(classRoomEntity.getSessionFee());
         classRoomDTO.setEnrolledStudentCount(classRoomEntity.getEnrolledStudentCount());
+
         if (classRoomEntity.getMentor() != null) {
-            MentorDTO mentorDTO = MentorEntityDTOMapper.map(classRoomEntity.getMentor());
+            // Use the simplified mapping to avoid circular reference
+            MentorDTO mentorDTO = MentorEntityDTOMapper.mapWithoutClassRoom(classRoomEntity.getMentor());
             classRoomDTO.setMentor(mentorDTO);
         }
+        return classRoomDTO;
+    }
+
+    // Simplified mapping without mentor details (to avoid circular reference)
+    public static ClassRoomDTO mapWithoutMentor(ClassRoomEntity classRoomEntity){
+        ClassRoomDTO classRoomDTO = new ClassRoomDTO();
+        classRoomDTO.setClassRoomId(classRoomEntity.getClassRoomId());
+        classRoomDTO.setTitle(classRoomEntity.getTitle());
+        classRoomDTO.setSessionFee(classRoomEntity.getSessionFee());
+        classRoomDTO.setEnrolledStudentCount(classRoomEntity.getEnrolledStudentCount());
+        // Don't map mentor to avoid circular reference
         return classRoomDTO;
     }
 
@@ -25,10 +40,6 @@ public class ClassRoomEntityDTOMapper {
         classRoomEntity.setTitle(classRoomDTO.getTitle());
         classRoomEntity.setSessionFee(classRoomDTO.getSessionFee());
         classRoomEntity.setEnrolledStudentCount(classRoomDTO.getEnrolledStudentCount());
-//        if (classRoomDTO.getMentor() != null) {
-//            MentorEntity mentorEntity = MentorEntityDTOMapper.map(classRoomDTO.getMentor());
-//            classRoomEntity.setMentor(mentorEntity);
-//        }
         return classRoomEntity;
     }
 

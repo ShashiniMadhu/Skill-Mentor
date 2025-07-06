@@ -1,5 +1,8 @@
 package com.skill_mentor.root.skill_mentor_root.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
+
 public class MentorDTO {
     private Integer mentorId;
     private String firstName;
@@ -11,6 +14,10 @@ public class MentorDTO {
     private String subject;
     private String qualification;
     private Integer classRoomId;
+
+    // List of sessions conducted by this mentor
+    @JsonProperty("sessions")
+    private List<SessionDTO> sessionDTOs;
 
     public MentorDTO() {}
 
@@ -107,5 +114,12 @@ public class MentorDTO {
     public void setClassRoomId(Integer classRoomId) {
         this.classRoomId = classRoomId;
     }
-    
+
+    public List<SessionDTO> getSessionDTOs() {
+        return sessionDTOs;
+    }
+
+    public void setSessionDTOs(List<SessionDTO> sessionDTOs) {
+        this.sessionDTOs = sessionDTOs;
+    }
 }

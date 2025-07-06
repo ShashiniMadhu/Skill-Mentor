@@ -3,9 +3,11 @@ package com.skill_mentor.root.skill_mentor_root.service.impl;
 import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
+import com.skill_mentor.root.skill_mentor_root.entity.SessionEntity;
 import com.skill_mentor.root.skill_mentor_root.mapper.MentorEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.MentorRepository;
+import com.skill_mentor.root.skill_mentor_root.repository.SessionRepository;
 import com.skill_mentor.root.skill_mentor_root.service.MentorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,9 @@ public class MentorServiceImpl implements MentorService {
 
     @Autowired
     private ClassRoomRepository classRoomRepository;
+
+    @Autowired
+    private SessionRepository sessionRepository;
 
     @Override
     public MentorDTO createMentor(MentorDTO mentorDTO) {
@@ -150,6 +155,15 @@ public class MentorServiceImpl implements MentorService {
             ClassRoomEntity classRoom = mentorEntity.getClassRoom();
             classRoom.setMentor(null);
             classRoomRepository.save(classRoom);
+        }
+
+        // Update all sessions to remove mentor reference before deletion
+        if (mentorEntity.getSessions() != null && !mentorEntity.getSessions().isEmpty()) {
+            List<SessionEntity> sessions = mentorEntity.getSessions();
+            for (SessionEntity session : sessions) {
+                session.setMentorEntity(null);
+                sessionRepository.save(session);
+            }
         }
 
         mentorRepository.deleteById(id);

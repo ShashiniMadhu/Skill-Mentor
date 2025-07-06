@@ -29,20 +29,20 @@ public class MentorController {
         return new ResponseEntity<>(mentorDTOS, HttpStatus.OK);
     }
 
-    @GetMapping("/{Id}")
+    @GetMapping("/{id}")
     public ResponseEntity<MentorDTO> getMentorById(@PathVariable Integer Id){
         MentorDTO mentor = mentorService.getMentorById(Id);
         return new ResponseEntity<>(mentor, HttpStatus.OK);
     }
 
     @PutMapping()
-    public ResponseEntity<MentorDTO> updateStudent(@RequestBody MentorDTO mentorDTO) {
+    public ResponseEntity<MentorDTO> updateMentor(@RequestBody MentorDTO mentorDTO) {
         mentorService.updateMentorById(mentorDTO);
         return new ResponseEntity<>(mentorDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<MentorDTO> deleteStudent(@PathVariable Integer id){
+    public ResponseEntity<MentorDTO> deleteMentor(@PathVariable Integer id){
         MentorDTO mentor = mentorService.deleteMentorById(id);
         return new ResponseEntity<>(mentor, HttpStatus.OK);
     }

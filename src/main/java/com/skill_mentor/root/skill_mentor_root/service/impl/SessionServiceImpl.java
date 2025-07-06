@@ -87,6 +87,21 @@ public class SessionServiceImpl implements SessionService {
                 .collect(Collectors.toList());
     }
 
+    // NEW: Get all sessions for a specific student
+    @Override
+    public List<SessionDTO> getSessionsByStudentId(Integer studentId) {
+        // Validate student exists
+        Optional<StudentEntity> studentEntityOpt = studentRepository.findById(studentId);
+        if (studentEntityOpt.isEmpty()) {
+            throw new RuntimeException("Student not found with ID: " + studentId);
+        }
+
+        List<SessionEntity> sessionEntities = sessionRepository.findByStudentEntityStudentId(studentId);
+        return sessionEntities.stream()
+                .map(SessionEntityDTOMapper::map)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public SessionDTO updateSession(SessionDTO sessionDTO) {
         Optional<SessionEntity> optionalSessionEntity = sessionRepository.findById(sessionDTO.getSessionId());
@@ -140,4 +155,3 @@ public class SessionServiceImpl implements SessionService {
         return SessionEntityDTOMapper.map(sessionEntity);
     }
 }
-
