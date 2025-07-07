@@ -1,5 +1,6 @@
 package com.skill_mentor.root.skill_mentor_root.service.impl;
 
+import com.skill_mentor.root.skill_mentor_root.dto.AuditDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.LiteSessionDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
@@ -7,6 +8,7 @@ import com.skill_mentor.root.skill_mentor_root.entity.LiteSessionEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.SessionEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.StudentEntity;
+import com.skill_mentor.root.skill_mentor_root.mapper.AuditDTOEntityMapper;
 import com.skill_mentor.root.skill_mentor_root.mapper.LiteSessionEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.mapper.SessionEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
@@ -38,6 +40,12 @@ public class SessionServiceImpl implements SessionService {
 
     @Autowired
     private LiteSessionRepository liteSessionRepository;
+
+    @Override
+    public List<AuditDTO> getAllAudits() {
+        final List<SessionEntity> sessionEntityList = sessionRepository.findAll();
+        return sessionEntityList.stream().map(AuditDTOEntityMapper::map).toList();
+    }
 
 //    @Override
 //    public SessionDTO createSession(SessionDTO sessionDTO) {

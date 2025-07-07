@@ -12,6 +12,7 @@ public class MentorDTO {
     private String title;
     private String profession;
     private String subject;
+    private String phoneNumber;
     private String qualification;
     private Integer classRoomId;
 
@@ -22,7 +23,7 @@ public class MentorDTO {
     public MentorDTO() {}
 
     public MentorDTO(Integer mentorId, String firstName, String lastName, String address, String email,
-                     String title, String profession, String subject, String qualification, Integer classRoomId){
+                     String title, String profession, String subject, String phoneNumber, String qualification, Integer classRoomId){
         this.mentorId = mentorId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -31,6 +32,7 @@ public class MentorDTO {
         this.title = title;
         this.profession = profession;
         this.subject = subject;
+        this.phoneNumber = phoneNumber;
         this.qualification = qualification;
         this.classRoomId = classRoomId;
     }
@@ -121,5 +123,13 @@ public class MentorDTO {
 
     public void setSessionDTOs(List<SessionDTO> sessionDTOs) {
         this.sessionDTOs = sessionDTOs;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

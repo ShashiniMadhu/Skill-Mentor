@@ -20,6 +20,7 @@ public class MentorEntityDTOMapper {
         mentorDTO.setTitle(mentorEntity.getTitle());
         mentorDTO.setProfession(mentorEntity.getProfession());
         mentorDTO.setSubject(mentorEntity.getSubject());
+        mentorDTO.setPhoneNumber(mentorEntity.getPhoneNumber());
         mentorDTO.setQualification(mentorEntity.getQualification());
 
         // If you need classRoomId in your DTO, get it from the relationship
@@ -49,6 +50,7 @@ public class MentorEntityDTOMapper {
         mentorDTO.setTitle(mentorEntity.getTitle());
         mentorDTO.setProfession(mentorEntity.getProfession());
         mentorDTO.setSubject(mentorEntity.getSubject());
+        mentorDTO.setPhoneNumber(mentorEntity.getPhoneNumber());
         mentorDTO.setQualification(mentorEntity.getQualification());
 
         // Only set classRoomId, don't map the full classroom object
