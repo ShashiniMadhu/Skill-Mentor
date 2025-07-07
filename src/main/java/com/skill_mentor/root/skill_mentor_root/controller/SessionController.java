@@ -56,7 +56,7 @@ public class SessionController {
         }
     }
 
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<List<SessionDTO>> getAllSessions() {
         List<SessionDTO> sessions = sessionService.getAllSessions();
         return new ResponseEntity<>(sessions, HttpStatus.OK);

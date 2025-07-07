@@ -1,11 +1,14 @@
 package com.skill_mentor.root.skill_mentor_root.service;
 
+import com.skill_mentor.root.skill_mentor_root.dto.AuditDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.LiteSessionDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 
 import java.util.List;
 
 public interface SessionService {
+
+    public abstract List<AuditDTO> getAllAudits();
 
 //    /**
 //     * Creates a new session.

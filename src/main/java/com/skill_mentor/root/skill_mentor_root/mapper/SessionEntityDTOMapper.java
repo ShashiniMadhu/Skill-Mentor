@@ -26,6 +26,7 @@ public class SessionEntityDTOMapper {
             sessionDTO.setStudent(StudentEntityDTOMapper.map(sessionEntity.getStudentEntity()));
         }
 
+        sessionDTO.setTopic(sessionEntity.getTopic());
         sessionDTO.setStartTime(sessionEntity.getStartTime());
         sessionDTO.setEndTime(sessionEntity.getEndTime());
         return sessionDTO;
@@ -49,6 +50,7 @@ public class SessionEntityDTOMapper {
             sessionDTO.setStudent(StudentEntityDTOMapper.map(sessionEntity.getStudentEntity()));
         }
 
+        sessionDTO.setTopic(sessionEntity.getTopic());
         sessionDTO.setStartTime(sessionEntity.getStartTime());
         sessionDTO.setEndTime(sessionEntity.getEndTime());
         return sessionDTO;
@@ -61,6 +63,7 @@ public class SessionEntityDTOMapper {
                 classRoomEntity,
                 mentorEntity,
                 studentEntity,
+                sessionDTO.getTopic(),
                 sessionDTO.getStartTime(),
                 sessionDTO.getEndTime()
         );

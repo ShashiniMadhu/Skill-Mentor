@@ -32,17 +32,21 @@ public class SessionEntity {
     @JoinColumn(name = "student_id", referencedColumnName = "student_id")
     private StudentEntity studentEntity;
 
+    @Column(name = "topic")
+    private String topic;
+
     @Column(name = "start_time")
     private Instant startTime;
 
     @Column(name = "end_time")
     private Instant endTime;
 
-    public SessionEntity(Integer sessionId, ClassRoomEntity classRoomEntity, MentorEntity mentorEntity, StudentEntity studentEntity, Instant startTime, Instant endTime) {
+    public SessionEntity(Integer sessionId, ClassRoomEntity classRoomEntity, MentorEntity mentorEntity, StudentEntity studentEntity, String topic, Instant startTime, Instant endTime) {
         this.sessionId = sessionId;
         this.classRoomEntity = classRoomEntity;
         this.mentorEntity = mentorEntity;
         this.studentEntity = studentEntity;
+        this.topic = topic;
         this.startTime = startTime;
         this.endTime = endTime;
     }
@@ -96,5 +100,13 @@ public class SessionEntity {
 
     public void setEndTime(Instant endTime) {
         this.endTime = endTime;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 }
