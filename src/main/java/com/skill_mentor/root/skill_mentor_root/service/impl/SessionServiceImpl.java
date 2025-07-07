@@ -1,12 +1,16 @@
 package com.skill_mentor.root.skill_mentor_root.service.impl;
 
+import com.skill_mentor.root.skill_mentor_root.dto.LiteSessionDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
+import com.skill_mentor.root.skill_mentor_root.entity.LiteSessionEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.SessionEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.StudentEntity;
+import com.skill_mentor.root.skill_mentor_root.mapper.LiteSessionEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.mapper.SessionEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
+import com.skill_mentor.root.skill_mentor_root.repository.LiteSessionRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.MentorRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.SessionRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.StudentRepository;
@@ -32,45 +36,56 @@ public class SessionServiceImpl implements SessionService {
     @Autowired
     private StudentRepository studentRepository;
 
+    @Autowired
+    private LiteSessionRepository liteSessionRepository;
+
+//    @Override
+//    public SessionDTO createSession(SessionDTO sessionDTO) {
+//        // Find related entities
+//        Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(sessionDTO.getClassRoom().getClassRoomId());
+//        Optional<StudentEntity> studentEntityOpt = studentRepository.findById(sessionDTO.getStudent().getStudentId());
+//
+//        if (classRoomEntityOpt.isEmpty()) {
+//            throw new RuntimeException("ClassRoom not found with ID: " + sessionDTO.getClassRoom().getClassRoomId());
+//        }
+//
+//        if (studentEntityOpt.isEmpty()) {
+//            throw new RuntimeException("Student not found with ID: " + sessionDTO.getStudent().getStudentId());
+//        }
+//
+//        ClassRoomEntity classRoomEntity = classRoomEntityOpt.get();
+//        StudentEntity studentEntity = studentEntityOpt.get();
+//
+//        // Get mentor from classroom (since classroom has one mentor)
+//        MentorEntity mentorEntity = classRoomEntity.getMentor();
+//        if (mentorEntity == null) {
+//            throw new RuntimeException("No mentor assigned to ClassRoom with ID: " + classRoomEntity.getClassRoomId());
+//        }
+//
+//        // Validate that the mentor in DTO matches the classroom's mentor (if provided)
+//        if (sessionDTO.getMentor() != null && sessionDTO.getMentor().getMentorId() != null) {
+//            if (!mentorEntity.getMentorId().equals(sessionDTO.getMentor().getMentorId())) {
+//                throw new RuntimeException("Mentor ID in session does not match the mentor assigned to the classroom");
+//            }
+//        }
+//
+//        SessionEntity sessionEntity = SessionEntityDTOMapper.map(
+//                sessionDTO,
+//                classRoomEntity,
+//                mentorEntity,
+//                studentEntity
+//        );
+//
+//        sessionEntity = sessionRepository.save(sessionEntity);
+//        return SessionEntityDTOMapper.map(sessionEntity);
+//    }
+
+    //for liteDTO
     @Override
-    public SessionDTO createSession(SessionDTO sessionDTO) {
-        // Find related entities
-        Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(sessionDTO.getClassRoom().getClassRoomId());
-        Optional<StudentEntity> studentEntityOpt = studentRepository.findById(sessionDTO.getStudent().getStudentId());
-
-        if (classRoomEntityOpt.isEmpty()) {
-            throw new RuntimeException("ClassRoom not found with ID: " + sessionDTO.getClassRoom().getClassRoomId());
-        }
-
-        if (studentEntityOpt.isEmpty()) {
-            throw new RuntimeException("Student not found with ID: " + sessionDTO.getStudent().getStudentId());
-        }
-
-        ClassRoomEntity classRoomEntity = classRoomEntityOpt.get();
-        StudentEntity studentEntity = studentEntityOpt.get();
-
-        // Get mentor from classroom (since classroom has one mentor)
-        MentorEntity mentorEntity = classRoomEntity.getMentor();
-        if (mentorEntity == null) {
-            throw new RuntimeException("No mentor assigned to ClassRoom with ID: " + classRoomEntity.getClassRoomId());
-        }
-
-        // Validate that the mentor in DTO matches the classroom's mentor (if provided)
-        if (sessionDTO.getMentor() != null && sessionDTO.getMentor().getMentorId() != null) {
-            if (!mentorEntity.getMentorId().equals(sessionDTO.getMentor().getMentorId())) {
-                throw new RuntimeException("Mentor ID in session does not match the mentor assigned to the classroom");
-            }
-        }
-
-        SessionEntity sessionEntity = SessionEntityDTOMapper.map(
-                sessionDTO,
-                classRoomEntity,
-                mentorEntity,
-                studentEntity
-        );
-
-        sessionEntity = sessionRepository.save(sessionEntity);
-        return SessionEntityDTOMapper.map(sessionEntity);
+    public LiteSessionDTO createSession(LiteSessionDTO sessionDTO) {
+        final LiteSessionEntity liteSessionEntity = LiteSessionEntityDTOMapper.map(sessionDTO);
+        final LiteSessionEntity savedEntity =  liteSessionRepository.save(liteSessionEntity);
+        return LiteSessionEntityDTOMapper.map(savedEntity);
     }
 
     @Override

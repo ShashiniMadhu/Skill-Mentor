@@ -1,18 +1,23 @@
 package com.skill_mentor.root.skill_mentor_root.service;
 
+import com.skill_mentor.root.skill_mentor_root.dto.LiteSessionDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 
 import java.util.List;
 
 public interface SessionService {
 
-    /**
-     * Creates a new session.
-     *
-     * @param sessionDTO the session data transfer object containing session details
-     * @return the created session data transfer object
-     */
-    SessionDTO createSession(SessionDTO sessionDTO);
+//    /**
+//     * Creates a new session.
+//     *
+//     * @param sessionDTO the session data transfer object containing session details
+//     * @return the created session data transfer object
+//     */
+//    SessionDTO createSession(SessionDTO sessionDTO);
+
+    //for liteDTO
+    LiteSessionDTO createSession(LiteSessionDTO sessionDTO);
+
 
     /**
      * Retrieves a session by its ID.
