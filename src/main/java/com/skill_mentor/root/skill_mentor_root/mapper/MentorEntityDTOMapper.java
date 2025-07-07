@@ -52,6 +52,7 @@ public class MentorEntityDTOMapper {
         mentorDTO.setSubject(mentorEntity.getSubject());
         mentorDTO.setPhoneNumber(mentorEntity.getPhoneNumber());
         mentorDTO.setQualification(mentorEntity.getQualification());
+        mentorDTO.setSessionFee(mentorEntity.getSessionFee());
 
         // Only set classRoomId, don't map the full classroom object
         if (mentorEntity.getClassRoom() != null) {
@@ -73,6 +74,7 @@ public class MentorEntityDTOMapper {
         mentorEntity.setProfession(mentorDTO.getProfession());
         mentorEntity.setSubject(mentorDTO.getSubject());
         mentorEntity.setQualification(mentorDTO.getQualification());
+        mentorEntity.setSessionFee(mentorDTO.getSessionFee());
 
         return mentorEntity;
     }
