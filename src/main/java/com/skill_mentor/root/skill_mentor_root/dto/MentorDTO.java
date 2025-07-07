@@ -14,6 +14,7 @@ public class MentorDTO {
     private String subject;
     private String phoneNumber;
     private String qualification;
+    private Double sessionFee;
     private Integer classRoomId;
 
     // List of sessions conducted by this mentor
@@ -23,7 +24,7 @@ public class MentorDTO {
     public MentorDTO() {}
 
     public MentorDTO(Integer mentorId, String firstName, String lastName, String address, String email,
-                     String title, String profession, String subject, String phoneNumber, String qualification, Integer classRoomId){
+                     String title, String profession, String subject, String phoneNumber, String qualification, Integer classRoomId,Double sessionFee){
         this.mentorId = mentorId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -34,6 +35,7 @@ public class MentorDTO {
         this.subject = subject;
         this.phoneNumber = phoneNumber;
         this.qualification = qualification;
+        this.sessionFee = sessionFee;
         this.classRoomId = classRoomId;
     }
 
@@ -131,5 +133,13 @@ public class MentorDTO {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public Double getSessionFee() {
+        return sessionFee;
+    }
+
+    public void setSessionFee(Double sessionFee) {
+        this.sessionFee = sessionFee;
     }
 }

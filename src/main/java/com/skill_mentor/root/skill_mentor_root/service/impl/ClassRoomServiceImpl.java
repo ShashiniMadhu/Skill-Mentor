@@ -75,7 +75,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
 
         // Update basic fields
         classRoomEntity.setTitle(classRoomDTO.getTitle());
-        classRoomEntity.setSessionFee(classRoomDTO.getSessionFee());
+//        classRoomEntity.setSessionFee(classRoomDTO.getSessionFee());
         classRoomEntity.setEnrolledStudentCount(classRoomDTO.getEnrolledStudentCount());
 
         // Update mentor if provided

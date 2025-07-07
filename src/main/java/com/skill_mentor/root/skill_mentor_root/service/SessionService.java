@@ -2,6 +2,7 @@ package com.skill_mentor.root.skill_mentor_root.service;
 
 import com.skill_mentor.root.skill_mentor_root.dto.AuditDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.LiteSessionDTO;
+import com.skill_mentor.root.skill_mentor_root.dto.PaymentDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.List;
 public interface SessionService {
 
     public abstract List<AuditDTO> getAllAudits();
+
+    public abstract List<PaymentDTO> findMentorPayments(String startDate,String endDate);
 
 //    /**
 //     * Creates a new session.

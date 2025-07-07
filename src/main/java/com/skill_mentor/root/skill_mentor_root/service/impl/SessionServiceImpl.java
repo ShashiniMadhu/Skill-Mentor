@@ -2,6 +2,7 @@ package com.skill_mentor.root.skill_mentor_root.service.impl;
 
 import com.skill_mentor.root.skill_mentor_root.dto.AuditDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.LiteSessionDTO;
+import com.skill_mentor.root.skill_mentor_root.dto.PaymentDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.LiteSessionEntity;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,6 +47,21 @@ public class SessionServiceImpl implements SessionService {
     public List<AuditDTO> getAllAudits() {
         final List<SessionEntity> sessionEntityList = sessionRepository.findAll();
         return sessionEntityList.stream().map(AuditDTOEntityMapper::map).toList();
+    }
+
+    @Override
+    public List<PaymentDTO> findMentorPayments(String startDate, String endDate) {
+        List<Object> list = sessionRepository.findMentorPayments(startDate, endDate);
+        if(list != null && !list.isEmpty()){
+            return list.stream().map(obj->{
+                Object[] row = (Object[]) obj;
+                Integer mentorId = (Integer) row[0];
+                String mentorName = (String) row[1];
+                Double totalFee = (Double) row[2];
+                return new PaymentDTO(mentorId, mentorName, totalFee);
+            }).toList();
+        }
+        return null;
     }
 
 //    @Override
