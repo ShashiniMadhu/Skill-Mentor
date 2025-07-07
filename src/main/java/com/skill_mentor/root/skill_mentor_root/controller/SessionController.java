@@ -1,6 +1,7 @@
 package com.skill_mentor.root.skill_mentor_root.controller;
 
 import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
+import com.skill_mentor.root.skill_mentor_root.dto.LiteSessionDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 import com.skill_mentor.root.skill_mentor_root.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,22 @@ public class SessionController {
     @Autowired
     private SessionService sessionService;
 
+//    @PostMapping
+//    public ResponseEntity<SessionDTO> createSession(@RequestBody SessionDTO sessionDTO){
+//        SessionDTO createdSession = sessionService.createSession(sessionDTO);
+//        if(createdSession != null){
+//            return new ResponseEntity<>(createdSession, HttpStatus.CREATED);
+//        }else{
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//    }
+
+    //For LiteDTO
     @PostMapping
-    public ResponseEntity<SessionDTO> createSession(@RequestBody SessionDTO sessionDTO){
-        SessionDTO createdSessin = sessionService.createSession(sessionDTO);
-        if(createdSessin != null){
-            return new ResponseEntity<>(createdSessin, HttpStatus.CREATED);
+    public ResponseEntity<LiteSessionDTO> createSession(@RequestBody LiteSessionDTO sessionDTO){
+        LiteSessionDTO createdSession = sessionService.createSession(sessionDTO);
+        if(createdSession != null){
+            return new ResponseEntity<>(createdSession, HttpStatus.CREATED);
         }else{
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
