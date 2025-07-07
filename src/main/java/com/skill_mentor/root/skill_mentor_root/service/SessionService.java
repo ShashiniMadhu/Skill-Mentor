@@ -1,46 +1,53 @@
 package com.skill_mentor.root.skill_mentor_root.service;
 
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
+
 import java.util.List;
 
 public interface SessionService {
 
     /**
-     * Create a new session
-     * @param sessionDTO the session data to create
-     * @return the created session DTO
+     * Creates a new session.
+     *
+     * @param sessionDTO the session data transfer object containing session details
+     * @return the created session data transfer object
      */
     SessionDTO createSession(SessionDTO sessionDTO);
 
     /**
-     * Get a session by its ID
-     * @param sessionId the ID of the session to retrieve
-     * @return the session DTO if found, null otherwise
+     * Retrieves a session by its ID.
+     *
+     * @param sessionId the ID of the session
+     * @return the session DTO, or null if not found
      */
     SessionDTO getSessionById(Integer sessionId);
 
     /**
-     * Get all sessions
-     * @return list of all session DTOs
+     * Retrieves all sessions.
+     *
+     * @return a list of session DTOs
      */
     List<SessionDTO> getAllSessions();
 
     /**
-     * Get all sessions for a specific student
+     * Retrieves all sessions for a given student ID.
+     *
      * @param studentId the ID of the student
-     * @return list of session DTOs for the student
+     * @return a list of session DTOs
      */
     List<SessionDTO> getSessionsByStudentId(Integer studentId);
 
     /**
-     * Update an existing session
-     * @param sessionDTO the session data to update
+     * Updates an existing session.
+     *
+     * @param sessionDTO the updated session data
      * @return the updated session DTO
      */
     SessionDTO updateSession(SessionDTO sessionDTO);
 
     /**
-     * Delete a session by its ID
+     * Deletes a session by its ID.
+     *
      * @param id the ID of the session to delete
      * @return the deleted session DTO
      */
