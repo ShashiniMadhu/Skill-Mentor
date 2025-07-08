@@ -18,7 +18,7 @@ public class ClassRoomEntityDTOMapper {
         if (classRoomEntity.getMentor() != null) {
             // Use the simplified mapping to avoid circular reference
             MentorDTO mentorDTO = MentorEntityDTOMapper.mapWithoutClassRoom(classRoomEntity.getMentor());
-            classRoomDTO.setMentor(mentorDTO);
+            classRoomDTO.setMentorDTO(mentorDTO);
         }
         return classRoomDTO;
     }

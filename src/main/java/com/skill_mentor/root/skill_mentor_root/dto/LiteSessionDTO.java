@@ -1,81 +1,44 @@
 package com.skill_mentor.root.skill_mentor_root.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.Instant;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LiteSessionDTO {
+
+    @NotNull
+    @JsonProperty("session_id")
     private Integer sessionId;
+
+    @NotNull
+    @JsonProperty("student_id")
     private Integer studentId;
+
+    @NotNull
+    @JsonProperty("class_room_id")
     private Integer classRoomId;
+
+    @NotNull
+    @JsonProperty("mentor_id")
     private Integer mentorId;
+
+    @NotBlank
+    @JsonProperty("topic")
     private String topic;
+
+    @NotNull
+    @JsonProperty("start_time")
     private Instant startTime;
+
+    @NotNull
+    @JsonProperty("end_time")
     private Instant endTime;
-
-    public LiteSessionDTO(Integer sessionId, Integer studentId, Integer classRoomId, Integer mentorId, String topic, Instant startTime, Instant endTime) {
-        this.sessionId = sessionId;
-        this.studentId = studentId;
-        this.classRoomId = classRoomId;
-        this.mentorId = mentorId;
-        this.topic = topic;
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
-
-    public LiteSessionDTO(){}
-
-    public Integer getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(Integer sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public Integer getStudentId() {
-        return studentId;
-    }
-
-    public void setStudentId(Integer studentId) {
-        this.studentId = studentId;
-    }
-
-    public Integer getClassRoomId() {
-        return classRoomId;
-    }
-
-    public void setClassRoomId(Integer classRoomId) {
-        this.classRoomId = classRoomId;
-    }
-
-    public Integer getMentorId() {
-        return mentorId;
-    }
-
-    public void setMentorId(Integer mentorId) {
-        this.mentorId = mentorId;
-    }
-
-    public Instant getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Instant startTime) {
-        this.startTime = startTime;
-    }
-
-    public Instant getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Instant endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
 }
