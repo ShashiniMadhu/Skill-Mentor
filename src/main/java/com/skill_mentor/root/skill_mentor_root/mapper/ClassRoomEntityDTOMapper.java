@@ -12,7 +12,7 @@ public class ClassRoomEntityDTOMapper {
         ClassRoomDTO classRoomDTO = new ClassRoomDTO();
         classRoomDTO.setClassRoomId(classRoomEntity.getClassRoomId());
         classRoomDTO.setTitle(classRoomEntity.getTitle());
-        classRoomDTO.setSessionFee(classRoomEntity.getSessionFee());
+//        classRoomDTO.setSessionFee(classRoomEntity.getSessionFee());
         classRoomDTO.setEnrolledStudentCount(classRoomEntity.getEnrolledStudentCount());
 
         if (classRoomEntity.getMentor() != null) {
@@ -28,7 +28,7 @@ public class ClassRoomEntityDTOMapper {
         ClassRoomDTO classRoomDTO = new ClassRoomDTO();
         classRoomDTO.setClassRoomId(classRoomEntity.getClassRoomId());
         classRoomDTO.setTitle(classRoomEntity.getTitle());
-        classRoomDTO.setSessionFee(classRoomEntity.getSessionFee());
+//        classRoomDTO.setSessionFee(classRoomEntity.getSessionFee());
         classRoomDTO.setEnrolledStudentCount(classRoomEntity.getEnrolledStudentCount());
         // Don't map mentor to avoid circular reference
         return classRoomDTO;
@@ -38,7 +38,7 @@ public class ClassRoomEntityDTOMapper {
         ClassRoomEntity classRoomEntity = new ClassRoomEntity();
         classRoomEntity.setClassRoomId(classRoomDTO.getClassRoomId());
         classRoomEntity.setTitle(classRoomDTO.getTitle());
-        classRoomEntity.setSessionFee(classRoomDTO.getSessionFee());
+//        classRoomEntity.setSessionFee(classRoomDTO.getSessionFee());
         classRoomEntity.setEnrolledStudentCount(classRoomDTO.getEnrolledStudentCount());
         return classRoomEntity;
     }

@@ -7,7 +7,7 @@ import java.util.List;
 public class ClassRoomDTO {
     private Integer classRoomId;
     private String title;
-    private Double sessionFee;
+//    private Double sessionFee;
     private Integer enrolledStudentCount;
     //one-one between mentor and classroom
     @JsonProperty("mentor") //Rename as your prefer
@@ -20,10 +20,10 @@ public class ClassRoomDTO {
     public ClassRoomDTO() {
     }
 
-    public ClassRoomDTO(Integer classRoomId, String name, Double sessionFee, Integer enrolledStudentCount, MentorDTO mentorId, List<SessionDTO> sessionDTOs) {
+    public ClassRoomDTO(Integer classRoomId, String title, Integer enrolledStudentCount, MentorDTO mentorId, List<SessionDTO> sessionDTOs) {
         this.classRoomId = classRoomId;
-        this.title = name;
-        this.sessionFee = sessionFee;
+        this.title = title;
+//        this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
         this.mentorDTO = mentorId;
         this.sessionDTOs = sessionDTOs;
@@ -45,13 +45,13 @@ public class ClassRoomDTO {
         this.title = title;
     }
 
-    public Double getSessionFee() {
-        return sessionFee;
-    }
-
-    public void setSessionFee(Double sessionFee) {
-        this.sessionFee = sessionFee;
-    }
+//    public Double getSessionFee() {
+//        return sessionFee;
+//    }
+//
+//    public void setSessionFee(Double sessionFee) {
+//        this.sessionFee = sessionFee;
+//    }
 
     public Integer getEnrolledStudentCount() {
         return enrolledStudentCount;
