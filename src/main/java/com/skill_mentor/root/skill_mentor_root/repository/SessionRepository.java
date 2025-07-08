@@ -13,11 +13,14 @@ public interface SessionRepository extends JpaRepository<SessionEntity,Integer> 
     // Find all sessions for a specific student
     List<SessionEntity> findByStudentEntityStudentId(Integer studentId);
 
-    //findMentorPayments query
-    @Query(value = "SELECT m.mentor_id AS mentorId, CONCAT(m.first_name, ' ', m.last_name) AS mentorName, SUM(m.session_fee) AS totalFee \n" +
-            "FROM session s  JOIN mentor m \n" +
-            "ON s.mentor_id = m.mentor_id  \n" +
-            "WHERE s.start_time BETWEEN :startTime AND :endTime  \n" +
-            "GROUP BY m.mentor_id;", nativeQuery = true)
-    List<Object> findMentorPayments(@Param("startTime") String startTime, @Param("endTime") String endTime);
+    @Query(value = "SELECT m.mentor_id AS mentorId, " +
+            "CONCAT(m.first_name, ' ', m.last_name) AS mentorName, " +
+            "(COUNT(s.session_id) * m.session_fee) AS totalFee " +
+            "FROM session s " +
+            "JOIN mentor m ON s.mentor_id = m.mentor_id " +
+            "WHERE (:startTime IS NULL OR s.start_time >= :startTime) " +
+            "AND (:endTime IS NULL OR s.start_time <= :endTime) " +
+            "GROUP BY m.mentor_id, m.first_name, m.last_name, m.session_fee " +
+            "ORDER BY totalFee DESC", nativeQuery = true)
+    List<Object[]> findMentorPayments(@Param("startTime") String startTime, @Param("endTime") String endTime);
 }

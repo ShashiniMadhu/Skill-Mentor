@@ -20,9 +20,9 @@ public class ClassRoomDTO {
     public ClassRoomDTO() {
     }
 
-    public ClassRoomDTO(Integer classRoomId, String name, Integer enrolledStudentCount, MentorDTO mentorId, List<SessionDTO> sessionDTOs) {
+    public ClassRoomDTO(Integer classRoomId, String title, Integer enrolledStudentCount, MentorDTO mentorId, List<SessionDTO> sessionDTOs) {
         this.classRoomId = classRoomId;
-        this.title = name;
+        this.title = title;
 //        this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
         this.mentorDTO = mentorId;

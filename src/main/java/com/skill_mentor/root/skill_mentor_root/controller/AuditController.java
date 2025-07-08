@@ -26,9 +26,10 @@ public class AuditController {
     }
 
     @GetMapping("/mentor-payments")
-    public ResponseEntity<List<PaymentDTO>> findMentorPayments(@RequestParam(name="startDate",required = false) String startDate,
-                                                               @RequestParam(name="endDate",required = false) String endDate){
-        List<PaymentDTO> auditDTOs = sessionService.findMentorPayments(startDate,endDate);
-        return new ResponseEntity<>(auditDTOs,HttpStatus.OK);
+    public ResponseEntity<List<PaymentDTO>> findMentorPayments(@RequestParam(name = "startDate", required = false) String startDate,
+                                                               @RequestParam(name = "endDate", required = false) String endDate){
+        List<PaymentDTO> auditDTOS = sessionService.findMentorPayments(startDate, endDate);
+        return new ResponseEntity<>(auditDTOS, HttpStatus.OK);
     }
 }
+

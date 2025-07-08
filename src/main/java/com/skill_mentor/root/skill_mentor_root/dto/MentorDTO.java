@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class MentorDTO {
+    @JsonProperty("mentorId")
     private Integer mentorId;
     private String firstName;
     private String lastName;
@@ -24,7 +25,7 @@ public class MentorDTO {
     public MentorDTO() {}
 
     public MentorDTO(Integer mentorId, String firstName, String lastName, String address, String email,
-                     String title, String profession, String subject, String phoneNumber, String qualification, Integer classRoomId,Double sessionFee){
+                     String title, String profession, String subject, String phoneNumber, String qualification, Double sessionFee, Integer classRoomId){
         this.mentorId = mentorId;
         this.firstName = firstName;
         this.lastName = lastName;

@@ -21,8 +21,8 @@ import com.skill_mentor.root.skill_mentor_root.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,17 +51,39 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public List<PaymentDTO> findMentorPayments(String startDate, String endDate) {
-        List<Object> list = sessionRepository.findMentorPayments(startDate, endDate);
-        if(list != null && !list.isEmpty()){
-            return list.stream().map(obj->{
-                Object[] row = (Object[]) obj;
-                Integer mentorId = (Integer) row[0];
-                String mentorName = (String) row[1];
-                Double totalFee = (Double) row[2];
-                return new PaymentDTO(mentorId, mentorName, totalFee);
-            }).toList();
+        try {
+            // Convert date strings to proper format if needed
+            String formattedStartDate = startDate;
+            String formattedEndDate = endDate;
+
+            // If dates are in different format, convert them here
+            // For example, if you're receiving "2024-01-01" but need "2024-01-01 00:00:00"
+            if (startDate != null && !startDate.contains(" ")) {
+                formattedStartDate = startDate + " 00:00:00";
+            }
+            if (endDate != null && !endDate.contains(" ")) {
+                formattedEndDate = endDate + " 23:59:59";
+            }
+
+            List<Object[]> results = sessionRepository.findMentorPayments(formattedStartDate, formattedEndDate);
+
+            if (results != null && !results.isEmpty()) {
+                return results.stream().map(row -> {
+                    Integer mentorId = ((Number) row[0]).intValue();
+                    String mentorName = (String) row[1];
+                    Double totalFee = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+
+                    return new PaymentDTO(mentorId, mentorName, totalFee);
+                }).collect(Collectors.toList());
+            }
+
+            return Collections.emptyList();
+
+        } catch (Exception e) {
+            System.err.println("Error finding mentor payments: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to find mentor payments: " + e.getMessage(), e);
         }
-        return null;
     }
 
 //    @Override

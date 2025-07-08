@@ -34,9 +34,9 @@ public class ClassRoomEntity {
     public ClassRoomEntity() {
     }
 
-    public ClassRoomEntity(Integer classRoomId, String name, Integer enrolledStudentCount, MentorEntity mentor, List<SessionEntity> sessions) {
+    public ClassRoomEntity(Integer classRoomId, String title, Double sessionFee, Integer enrolledStudentCount, MentorEntity mentor, List<SessionEntity> sessions) {
         this.classRoomId = classRoomId;
-        this.title = name;
+        this.title = title;
 //        this.sessionFee = sessionFee;
         this.enrolledStudentCount = enrolledStudentCount;
         this.mentor = mentor;

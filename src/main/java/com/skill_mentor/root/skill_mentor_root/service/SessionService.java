@@ -11,7 +11,7 @@ public interface SessionService {
 
     public abstract List<AuditDTO> getAllAudits();
 
-    public abstract List<PaymentDTO> findMentorPayments(String startDate,String endDate);
+    public abstract List<PaymentDTO> findMentorPayments(String startDate, String endDate);
 
 //    /**
 //     * Creates a new session.

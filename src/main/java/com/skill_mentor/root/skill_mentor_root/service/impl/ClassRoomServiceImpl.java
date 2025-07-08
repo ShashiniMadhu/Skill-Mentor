@@ -22,20 +22,45 @@ public class ClassRoomServiceImpl implements ClassRoomService {
 
     @Override
     public ClassRoomDTO createClassRoom(ClassRoomDTO classRoomDTO) {
-        classRoomDTO.setClassRoomId(null);
-
-        ClassRoomEntity classRoomEntity = ClassRoomEntityDTOMapper.map(classRoomDTO);
-
-        // If mentor is provided, set the relationship
-        if (classRoomDTO.getMentor() != null && classRoomDTO.getMentor().getMentorId() != null) {
-            Optional<MentorEntity> mentorEntityOpt = mentorRepository.findById(classRoomDTO.getMentor().getMentorId());
-            if (mentorEntityOpt.isPresent()) {
-                classRoomEntity.setMentor(mentorEntityOpt.get());
+        try {
+            // Validate required fields
+            if (classRoomDTO.getTitle() == null || classRoomDTO.getTitle().trim().isEmpty()) {
+                throw new RuntimeException("ClassRoom title is required");
             }
-        }
 
-        ClassRoomEntity savedEntity = classRoomRepository.save(classRoomEntity);
-        return ClassRoomEntityDTOMapper.map(savedEntity);
+            if (classRoomDTO.getMentor() == null || classRoomDTO.getMentor().getMentorId() == null) {
+                throw new RuntimeException("Mentor information is required");
+            }
+
+            // Set ID to null for new creation
+            classRoomDTO.setClassRoomId(null);
+
+            // Find mentor
+            MentorEntity mentorEntity = mentorRepository.findById(classRoomDTO.getMentor().getMentorId())
+                    .orElseThrow(() -> new RuntimeException("Mentor not found with ID: " + classRoomDTO.getMentor().getMentorId()));
+
+            // Check if mentor already has a classroom (one-to-one relationship)
+            if (mentorEntity.getClassRoom() != null) {
+                throw new RuntimeException("Mentor with ID " + mentorEntity.getMentorId() + " already has a classroom assigned");
+            }
+
+            // Create classroom entity
+            ClassRoomEntity classRoomEntity = ClassRoomEntityDTOMapper.map(classRoomDTO);
+            classRoomEntity.setMentor(mentorEntity);
+
+            // Set default values if not provided
+            if (classRoomEntity.getEnrolledStudentCount() == null) {
+                classRoomEntity.setEnrolledStudentCount(0);
+            }
+
+            ClassRoomEntity savedEntity = classRoomRepository.save(classRoomEntity);
+            return ClassRoomEntityDTOMapper.map(savedEntity);
+
+        } catch (Exception e) {
+            System.err.println("Error creating classroom: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create classroom: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -75,7 +100,6 @@ public class ClassRoomServiceImpl implements ClassRoomService {
 
         // Update basic fields
         classRoomEntity.setTitle(classRoomDTO.getTitle());
-//        classRoomEntity.setSessionFee(classRoomDTO.getSessionFee());
         classRoomEntity.setEnrolledStudentCount(classRoomDTO.getEnrolledStudentCount());
 
         // Update mentor if provided
