@@ -1,82 +1,44 @@
 package com.skill_mentor.root.skill_mentor_root.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.Instant;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class SessionDTO {
+
+    @NotNull
+    @JsonProperty("session_id")
     private Integer sessionId;
+
+    @NotNull
+    @JsonProperty("class_room")
     private ClassRoomDTO classRoom;
+
+    @NotNull
+    @JsonProperty("mentor")
     private MentorDTO mentor;
+
+    @NotNull
+    @JsonProperty("student")
     private StudentDTO student;
+
+    @NotBlank
+    @JsonProperty("topic")
     private String topic;
+
+    @NotNull
+    @JsonProperty("start_time")
     private Instant startTime;
+
+    @NotNull
+    @JsonProperty("end_time")
     private Instant endTime;
-
-    public SessionDTO(Integer sessionId, ClassRoomDTO classRoom, MentorDTO mentor, StudentDTO student, String topic, Instant startTime, Instant endTime) {
-        this.sessionId = sessionId;
-        this.classRoom = classRoom;
-        this.mentor = mentor;
-        this.student = student;
-        this.topic = topic;
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
-
-    public SessionDTO() {
-    }
-
-    public Integer getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(Integer sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public ClassRoomDTO getClassRoom() {
-        return classRoom;
-    }
-
-    public void setClassRoom(ClassRoomDTO classRoom) {
-        this.classRoom = classRoom;
-    }
-
-    public MentorDTO getMentor() {
-        return mentor;
-    }
-
-    public void setMentor(MentorDTO mentor) {
-        this.mentor = mentor;
-    }
-
-    public StudentDTO getStudent() {
-        return student;
-    }
-
-    public void setStudent(StudentDTO student) {
-        this.student = student;
-    }
-
-    public Instant getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Instant startTime) {
-        this.startTime = startTime;
-    }
-
-    public Instant getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Instant endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
 }

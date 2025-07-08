@@ -9,12 +9,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 @Entity
+@Data
 @Table(name = "session")
+@NoArgsConstructor
+@AllArgsConstructor
 public class SessionEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "session_id")
@@ -40,73 +47,4 @@ public class SessionEntity {
 
     @Column(name = "end_time")
     private Instant endTime;
-
-    public SessionEntity(Integer sessionId, ClassRoomEntity classRoomEntity, MentorEntity mentorEntity, StudentEntity studentEntity, String topic, Instant startTime, Instant endTime) {
-        this.sessionId = sessionId;
-        this.classRoomEntity = classRoomEntity;
-        this.mentorEntity = mentorEntity;
-        this.studentEntity = studentEntity;
-        this.topic = topic;
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
-
-    public SessionEntity() {
-    }
-
-    public Integer getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(Integer sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public ClassRoomEntity getClassRoomEntity() {
-        return classRoomEntity;
-    }
-
-    public void setClassRoomEntity(ClassRoomEntity classRoomEntity) {
-        this.classRoomEntity = classRoomEntity;
-    }
-
-    public MentorEntity getMentorEntity() {
-        return mentorEntity;
-    }
-
-    public void setMentorEntity(MentorEntity mentorEntity) {
-        this.mentorEntity = mentorEntity;
-    }
-
-    public StudentEntity getStudentEntity() {
-        return studentEntity;
-    }
-
-    public void setStudentEntity(StudentEntity studentEntity) {
-        this.studentEntity = studentEntity;
-    }
-
-    public Instant getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Instant startTime) {
-        this.startTime = startTime;
-    }
-
-    public Instant getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Instant endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
 }

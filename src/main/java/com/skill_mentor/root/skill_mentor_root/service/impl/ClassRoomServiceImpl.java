@@ -28,7 +28,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
                 throw new RuntimeException("ClassRoom title is required");
             }
 
-            if (classRoomDTO.getMentor() == null || classRoomDTO.getMentor().getMentorId() == null) {
+            if (classRoomDTO.getMentorDTO() == null || classRoomDTO.getMentorDTO().getMentorId() == null) {
                 throw new RuntimeException("Mentor information is required");
             }
 
@@ -36,8 +36,8 @@ public class ClassRoomServiceImpl implements ClassRoomService {
             classRoomDTO.setClassRoomId(null);
 
             // Find mentor
-            MentorEntity mentorEntity = mentorRepository.findById(classRoomDTO.getMentor().getMentorId())
-                    .orElseThrow(() -> new RuntimeException("Mentor not found with ID: " + classRoomDTO.getMentor().getMentorId()));
+            MentorEntity mentorEntity = mentorRepository.findById(classRoomDTO.getMentorDTO().getMentorId())
+                    .orElseThrow(() -> new RuntimeException("Mentor not found with ID: " + classRoomDTO.getMentorDTO().getMentorId()));
 
             // Check if mentor already has a classroom (one-to-one relationship)
             if (mentorEntity.getClassRoom() != null) {
@@ -103,8 +103,8 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         classRoomEntity.setEnrolledStudentCount(classRoomDTO.getEnrolledStudentCount());
 
         // Update mentor if provided
-        if (classRoomDTO.getMentor() != null && classRoomDTO.getMentor().getMentorId() != null) {
-            Optional<MentorEntity> mentorEntityOpt = mentorRepository.findById(classRoomDTO.getMentor().getMentorId());
+        if (classRoomDTO.getMentorDTO() != null && classRoomDTO.getMentorDTO().getMentorId() != null) {
+            Optional<MentorEntity> mentorEntityOpt = mentorRepository.findById(classRoomDTO.getMentorDTO().getMentorId());
             if (mentorEntityOpt.isPresent()) {
                 classRoomEntity.setMentor(mentorEntityOpt.get());
             }
