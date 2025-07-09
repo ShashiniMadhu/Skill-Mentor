@@ -9,10 +9,6 @@ import java.util.List;
 
 public interface SessionService {
 
-    public abstract List<AuditDTO> getAllAudits();
-
-    public abstract List<PaymentDTO> findMentorPayments(String startDate, String endDate);
-
 //    /**
 //     * Creates a new session.
 //     *
@@ -24,6 +20,16 @@ public interface SessionService {
     //for liteDTO
     LiteSessionDTO createSession(LiteSessionDTO sessionDTO);
 
+    /**
+     * Retrieves all sessions.
+     *
+     * @return a list of session DTOs
+     */
+    List<SessionDTO> getAllSessions();
+
+    List<AuditDTO> getAllAudits();
+
+    List<PaymentDTO> findMentorPayments(String startDate, String endDate);
 
     /**
      * Retrieves a session by its ID.
@@ -33,12 +39,7 @@ public interface SessionService {
      */
     SessionDTO getSessionById(Integer sessionId);
 
-    /**
-     * Retrieves all sessions.
-     *
-     * @return a list of session DTOs
-     */
-    List<SessionDTO> getAllSessions();
+
 
     /**
      * Retrieves all sessions for a given student ID.

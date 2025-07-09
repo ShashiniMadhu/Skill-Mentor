@@ -4,6 +4,7 @@ import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.SessionEntity;
+import com.skill_mentor.root.skill_mentor_root.exception.MentorException;
 import com.skill_mentor.root.skill_mentor_root.mapper.MentorEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.MentorRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MentorServiceImpl implements MentorService {
@@ -32,14 +34,11 @@ public class MentorServiceImpl implements MentorService {
     public MentorDTO createMentor(MentorDTO mentorDTO) {
         // Check if mentor already has a classroom assigned
         if (mentorDTO.getClassRoomId() != null) {
-            Optional<ClassRoomEntity> classRoomOpt = classRoomRepository.findById(mentorDTO.getClassRoomId());
-            if (classRoomOpt.isPresent()) {
-                ClassRoomEntity classRoom = classRoomOpt.get();
-                if (classRoom.getMentor() != null) {
-                    throw new RuntimeException("ClassRoom with ID " + mentorDTO.getClassRoomId() + " already has a mentor assigned");
-                }
-            } else {
-                throw new RuntimeException("ClassRoom not found with ID: " + mentorDTO.getClassRoomId());
+            ClassRoomEntity classRoom = classRoomRepository.findById(mentorDTO.getClassRoomId())
+                    .orElseThrow(() -> new MentorException("ClassRoom not found with ID?: " + mentorDTO.getClassRoomId()));
+
+            if (classRoom.getMentor() != null) {
+                throw new RuntimeException("ClassRoom with ID " + mentorDTO.getClassRoomId() + " already has a mentor assigned");
             }
         }
 
@@ -49,45 +48,42 @@ public class MentorServiceImpl implements MentorService {
 
         // If classRoomId is provided, establish the bidirectional relationship
         if (mentorDTO.getClassRoomId() != null) {
-            Optional<ClassRoomEntity> classRoomOpt = classRoomRepository.findById(mentorDTO.getClassRoomId());
-            if (classRoomOpt.isPresent()) {
-                ClassRoomEntity classRoom = classRoomOpt.get();
-                // Set bidirectional relationship
-                classRoom.setMentor(savedMentor);
-                savedMentor.setClassRoom(classRoom);
+            ClassRoomEntity classRoom = classRoomRepository.findById(mentorDTO.getClassRoomId())
+                    .orElseThrow(() -> new MentorException("ClassRoom not found with ID?: " + mentorDTO.getClassRoomId()));
 
-                // Save both entities to maintain consistency
-                classRoomRepository.save(classRoom);
-                savedMentor = mentorRepository.save(savedMentor);
-            }
+            // Set bidirectional relationship
+            classRoom.setMentor(savedMentor);
+            savedMentor.setClassRoom(classRoom);
+
+            // Save both entities to maintain consistency
+            classRoomRepository.save(classRoom);
+            savedMentor = mentorRepository.save(savedMentor);
         }
 
         return MentorEntityDTOMapper.map(savedMentor);
     }
 
+
     @Override
     public List<MentorDTO> getAllMentors(String subject) {
-        final List<MentorEntity> mentorEntities = mentorRepository.findAll();
-        return mentorEntities.stream()
+//        final List<MentorEntity> mentorEntities = mentorRepository.findAll();
+        return mentorRepository.findAll().stream()
                 .filter(mentor -> subject == null || Objects.equals(subject, mentor.getSubject()))
                 .map(MentorEntityDTOMapper::map)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
-    public MentorDTO getMentorById(Integer id) {
-        Optional<MentorEntity> mentorEntity = mentorRepository.findById(id);
-        return mentorEntity.map(MentorEntityDTOMapper::map).orElse(null);
+    public MentorDTO findMentorById(Integer id) {
+        return mentorRepository.findById(id)
+                .map(MentorEntityDTOMapper::map)
+                .orElseThrow(() -> new MentorException("Mentor not found with ID: " + id));
     }
 
     @Override
     public MentorDTO updateMentorById(MentorDTO mentorDTO) {
-        Optional<MentorEntity> mentorEntityOpt = mentorRepository.findById(mentorDTO.getMentorId());
-        if (mentorEntityOpt.isEmpty()) {
-            throw new RuntimeException("Mentor not found with ID: " + mentorDTO.getMentorId());
-        }
-
-        MentorEntity mentorEntity = mentorEntityOpt.get();
+        final MentorEntity mentorEntity = mentorRepository.findById(mentorDTO.getMentorId())
+                .orElseThrow(() -> new MentorException("Cannot update. Mentor not found with ID: " + mentorDTO.getMentorId()));
 
         // Update basic fields
         mentorEntity.setFirstName(mentorDTO.getFirstName());
@@ -98,6 +94,8 @@ public class MentorServiceImpl implements MentorService {
         mentorEntity.setProfession(mentorDTO.getProfession());
         mentorEntity.setSubject(mentorDTO.getSubject());
         mentorEntity.setQualification(mentorDTO.getQualification());
+        mentorEntity.setPhoneNumber(mentorDTO.getPhoneNumber());
+        mentorEntity.setSessionFee(mentorDTO.getSessionFee());
 
         // Handle classroom relationship change
         if (mentorDTO.getClassRoomId() != null) {
@@ -114,18 +112,15 @@ public class MentorServiceImpl implements MentorService {
                 }
 
                 // Add to new classroom
-                Optional<ClassRoomEntity> newClassRoomOpt = classRoomRepository.findById(mentorDTO.getClassRoomId());
-                if (newClassRoomOpt.isPresent()) {
-                    ClassRoomEntity newClassRoom = newClassRoomOpt.get();
-                    if (newClassRoom.getMentor() != null) {
-                        throw new RuntimeException("ClassRoom with ID " + mentorDTO.getClassRoomId() + " already has a mentor assigned");
-                    }
-                    newClassRoom.setMentor(mentorEntity);
-                    mentorEntity.setClassRoom(newClassRoom);
-                    classRoomRepository.save(newClassRoom);
-                } else {
-                    throw new RuntimeException("ClassRoom not found with ID: " + mentorDTO.getClassRoomId());
+                ClassRoomEntity newClassRoom = classRoomRepository.findById(mentorDTO.getClassRoomId())
+                        .orElseThrow(() -> new MentorException("ClassRoom not found with ID: " + mentorDTO.getClassRoomId()));
+
+                if (newClassRoom.getMentor() != null) {
+                    throw new MentorException("ClassRoom with ID " + mentorDTO.getClassRoomId() + " already has a mentor assigned");
                 }
+                newClassRoom.setMentor(mentorEntity);
+                mentorEntity.setClassRoom(newClassRoom);
+                classRoomRepository.save(newClassRoom);
             }
         } else {
             // Remove from current classroom if classRoomId is null
@@ -137,18 +132,14 @@ public class MentorServiceImpl implements MentorService {
             }
         }
 
-        MentorEntity updatedEntity = mentorRepository.save(mentorEntity);
+        final MentorEntity updatedEntity = mentorRepository.save(mentorEntity);
         return MentorEntityDTOMapper.map(updatedEntity);
     }
 
     @Override
     public MentorDTO deleteMentorById(Integer id) {
-        Optional<MentorEntity> mentorEntityOpt = mentorRepository.findById(id);
-        if (mentorEntityOpt.isEmpty()) {
-            throw new RuntimeException("Mentor not found with ID: " + id);
-        }
-
-        MentorEntity mentorEntity = mentorEntityOpt.get();
+        final MentorEntity mentorEntity = mentorRepository.findById(id)
+                .orElseThrow(() -> new MentorException("Cannot delete. Mentor not found with ID: " + id));
 
         // Remove mentor from classroom before deletion
         if (mentorEntity.getClassRoom() != null) {

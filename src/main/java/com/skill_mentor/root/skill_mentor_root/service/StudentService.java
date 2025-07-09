@@ -32,7 +32,7 @@ public interface StudentService {
      * @param id the ID of the student to retrieve
      * @return a StudentDTO object representing the student
      */
-    StudentDTO getStudentById(Integer id);
+    StudentDTO findStudentById(Integer id);
 
     /**
      * Updates an existing student's details.

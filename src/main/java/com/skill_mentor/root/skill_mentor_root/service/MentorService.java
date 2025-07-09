@@ -12,7 +12,7 @@ public interface MentorService {
 
     List<MentorDTO> getAllMentors(String subject);
 
-    MentorDTO getMentorById(Integer Id);
+    MentorDTO findMentorById(Integer Id);
 
     MentorDTO updateMentorById(MentorDTO mentorDTO);
 

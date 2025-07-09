@@ -1,9 +1,13 @@
 package com.skill_mentor.root.skill_mentor_root.controller;
+
+import com.skill_mentor.root.skill_mentor_root.common.Constants;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.StudentDTO;
-
+import com.skill_mentor.root.skill_mentor_root.exception.StudentException;
 import com.skill_mentor.root.skill_mentor_root.service.SessionService;
 import com.skill_mentor.root.skill_mentor_root.service.StudentService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/student")
+@RequestMapping(value = "/academic")
 public class StudentController {
 
     @Autowired
@@ -21,37 +25,37 @@ public class StudentController {
     @Autowired
     private SessionService sessionService;
 
-    @PostMapping()
-    public ResponseEntity<StudentDTO> createStudent(@RequestBody StudentDTO studentDTO) {
-        StudentDTO savedDTO = studentService.createStudent(studentDTO);
+    @PostMapping(value = "/student", consumes = Constants.APPLICATION_JSON, produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<StudentDTO> createStudent(@RequestBody @Valid StudentDTO studentDTO) {
+        final StudentDTO savedDTO = studentService.createStudent(studentDTO);
         return new ResponseEntity<>(savedDTO, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping(value = "/student", produces = Constants.APPLICATION_JSON)
     public ResponseEntity<List<StudentDTO>> getAllStudents(
             //@RequestParam(required = false)String address,
             @RequestParam(required = false)List<String> addresses,//when filter from multiple addresses
             @RequestParam(required = false)Integer age
     ) {
-        List<StudentDTO> studentDTOS = studentService.getAllStudents(addresses,age);
+        final List<StudentDTO> studentDTOS = studentService.getAllStudents(addresses,age);
         return new ResponseEntity<>(studentDTOS, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<StudentDTO> findStudentById(@PathVariable Integer id){
-        StudentDTO student = studentService.getStudentById(id);
+    @GetMapping(value = "/student/{id}", produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<StudentDTO> findStudentById(@PathVariable @Min(0) Integer id) throws StudentException {
+        final StudentDTO student = studentService.findStudentById(id);
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
-    @PutMapping()
-    public ResponseEntity<StudentDTO> updateStudent(@RequestBody StudentDTO studentDTO) {
-        studentService.updateStudentById(studentDTO);
-        return new ResponseEntity<>(studentDTO, HttpStatus.OK);
+    @PutMapping(value = "/student", consumes = Constants.APPLICATION_JSON, produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<StudentDTO> updateStudent(@RequestBody @Valid StudentDTO studentDTO) {
+        final StudentDTO student = studentService.updateStudentById(studentDTO);
+        return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<StudentDTO> deleteStudent(@PathVariable Integer id){
-        StudentDTO student = studentService.deleteStudentById(id);
+    @DeleteMapping(value = "/student/{id}", produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<StudentDTO> deleteStudent(@PathVariable @Min(0) Integer id){
+        final StudentDTO student = studentService.deleteStudentById(id);
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
