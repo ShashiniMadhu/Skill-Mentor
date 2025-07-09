@@ -1,6 +1,6 @@
 package com.skill_mentor.root.skill_mentor_root.controller;
 
-import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
+import com.skill_mentor.root.skill_mentor_root.common.Constants;
 import com.skill_mentor.root.skill_mentor_root.dto.LiteSessionDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 import com.skill_mentor.root.skill_mentor_root.service.SessionService;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(value="/sessions")
+@RequestMapping(value="/academic")
 public class SessionController {
 
     @Autowired
@@ -36,11 +36,11 @@ public class SessionController {
 //    }
 
     //For LiteDTO
-    @PostMapping
+    @PostMapping(value = "/session", consumes = Constants.APPLICATION_JSON, produces = Constants.APPLICATION_JSON)
     public ResponseEntity<LiteSessionDTO> createSession(@RequestBody LiteSessionDTO sessionDTO){
-        LiteSessionDTO createdSession = sessionService.createSession(sessionDTO);
+        final LiteSessionDTO createdSession = sessionService.createSession(sessionDTO);
         if(createdSession != null){
-            return new ResponseEntity<>(createdSession, HttpStatus.CREATED);
+            return ResponseEntity.ok(createdSession);
         }else{
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -56,9 +56,9 @@ public class SessionController {
         }
     }
 
-    @GetMapping()
+    @GetMapping(value = "/session", produces = Constants.APPLICATION_JSON)
     public ResponseEntity<List<SessionDTO>> getAllSessions() {
-        List<SessionDTO> sessions = sessionService.getAllSessions();
+        final List<SessionDTO> sessions = sessionService.getAllSessions();
         return new ResponseEntity<>(sessions, HttpStatus.OK);
     }
 

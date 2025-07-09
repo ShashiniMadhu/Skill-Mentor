@@ -1,47 +1,51 @@
 package com.skill_mentor.root.skill_mentor_root.controller;
 
+import com.skill_mentor.root.skill_mentor_root.common.Constants;
 import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
 import com.skill_mentor.root.skill_mentor_root.service.ClassRoomService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/classroom")
+@RequestMapping(value = "/academic")
 public class ClassRoomController {
     @Autowired
     private ClassRoomService classroomService;
 
-    @PostMapping()
-    public ResponseEntity<ClassRoomDTO> createClassroom(@RequestBody ClassRoomDTO classroomDTO) {
-        ClassRoomDTO createdClassroom = classroomService.createClassRoom(classroomDTO);
-        return new ResponseEntity<>(createdClassroom, HttpStatus.OK);
+    public ClassRoomController(){}
+
+    @PostMapping(value = "/classroom", consumes = Constants.APPLICATION_JSON, produces = Constants.APPLICATION_JSON)
+        public ResponseEntity<ClassRoomDTO> createClassroom(@Valid @RequestBody ClassRoomDTO classroomDTO) {
+        final ClassRoomDTO createdClassroom = classroomService.createClassRoom(classroomDTO);
+        return ResponseEntity.ok(createdClassroom);
     }
 
-    @GetMapping()
+    @GetMapping(value = "/classroom", produces = Constants.APPLICATION_JSON)
     public ResponseEntity<List<ClassRoomDTO>> getAllClassrooms() {
-        List<ClassRoomDTO> classroomDTOS = (List<ClassRoomDTO>) classroomService.getAllClassRooms();
-        return new ResponseEntity<>(classroomDTOS, HttpStatus.OK);
+        final List<ClassRoomDTO> classroomDTOS = (List<ClassRoomDTO>) classroomService.getAllClassRooms();
+        return ResponseEntity.ok(classroomDTOS);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ClassRoomDTO> findClassroomById(@PathVariable Integer id) {
-        ClassRoomDTO classroom = classroomService.findClassRoomById(id);
-        return new ResponseEntity<>(classroom, HttpStatus.OK);
+    @GetMapping(value="classroom/{id}",produces=Constants.APPLICATION_JSON)
+    public ResponseEntity<ClassRoomDTO> findClassroomById(@PathVariable @Min(value = 1, message = "Classroom ID must be positive") Integer id) {
+        final ClassRoomDTO classroom = classroomService.findClassRoomById(id);
+        return ResponseEntity.ok(classroom);
     }
 
-    @PutMapping()
-    public ResponseEntity<ClassRoomDTO> updateClassroom(@RequestBody ClassRoomDTO classroomDTO) {
-        ClassRoomDTO classroom = classroomService.updateClassRoom(classroomDTO);
-        return new ResponseEntity<>(classroom, HttpStatus.OK);
+    @PutMapping(value = "/classroom", consumes = Constants.APPLICATION_JSON, produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<ClassRoomDTO> updateClassroom(@Valid @RequestBody ClassRoomDTO classroomDTO) {
+        final ClassRoomDTO classroom = classroomService.updateClassRoom(classroomDTO);
+        return ResponseEntity.ok(classroom);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ClassRoomDTO> deleteClassroom(@PathVariable Integer id) {
-        ClassRoomDTO classroom = classroomService.deleteClassRoomById(id);
-        return new ResponseEntity<>(classroom, HttpStatus.OK);
+    @DeleteMapping(value = "/classroom/{id}", produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<ClassRoomDTO> deleteClassroom(@PathVariable @Min(value = 1, message = "Classroom ID must be positive") Integer id) {
+        final ClassRoomDTO classroom = classroomService.deleteClassRoomById(id);
+        return ResponseEntity.ok(classroom);
     }
 }
