@@ -46,7 +46,7 @@ public class SessionController {
         }
     }
 
-    @GetMapping("/{sessionId}")
+    @GetMapping("/session/{sessionId}")
     public ResponseEntity<SessionDTO> getSessionById(@PathVariable Integer sessionId) {
         SessionDTO sessionDTO = sessionService.getSessionById(sessionId);
         if (sessionDTO != null) {

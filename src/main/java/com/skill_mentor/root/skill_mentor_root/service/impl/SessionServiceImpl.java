@@ -1,37 +1,23 @@
 package com.skill_mentor.root.skill_mentor_root.service.impl;
 
-import com.skill_mentor.root.skill_mentor_root.dto.AuditDTO;
-import com.skill_mentor.root.skill_mentor_root.dto.LiteSessionDTO;
-import com.skill_mentor.root.skill_mentor_root.dto.PaymentDTO;
-import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
-import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
-import com.skill_mentor.root.skill_mentor_root.entity.LiteSessionEntity;
-import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
-import com.skill_mentor.root.skill_mentor_root.entity.SessionEntity;
-import com.skill_mentor.root.skill_mentor_root.entity.StudentEntity;
-import com.skill_mentor.root.skill_mentor_root.mapper.AuditDTOEntityMapper;
-import com.skill_mentor.root.skill_mentor_root.mapper.LiteSessionEntityDTOMapper;
-import com.skill_mentor.root.skill_mentor_root.mapper.SessionEntityDTOMapper;
-import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
-import com.skill_mentor.root.skill_mentor_root.repository.LiteSessionRepository;
-import com.skill_mentor.root.skill_mentor_root.repository.MentorRepository;
-import com.skill_mentor.root.skill_mentor_root.repository.SessionRepository;
-import com.skill_mentor.root.skill_mentor_root.repository.StudentRepository;
+import com.skill_mentor.root.skill_mentor_root.dto.*;
+import com.skill_mentor.root.skill_mentor_root.entity.*;
+import com.skill_mentor.root.skill_mentor_root.mapper.*;
+import com.skill_mentor.root.skill_mentor_root.repository.*;
 import com.skill_mentor.root.skill_mentor_root.service.SessionService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class SessionServiceImpl implements SessionService {
+
     @Autowired
     private SessionRepository sessionRepository;
 
@@ -47,8 +33,7 @@ public class SessionServiceImpl implements SessionService {
     @Autowired
     private LiteSessionRepository liteSessionRepository;
 
-
-//    @Override
+    //    @Override
 //    public SessionDTO createSession(SessionDTO sessionDTO) {
 //        // Find related entities
 //        Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(sessionDTO.getClassRoom().getClassRoomId());
@@ -94,18 +79,22 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = {"sessionCache", "allSessionsCache"}, allEntries = true)
     public LiteSessionDTO createSession(final LiteSessionDTO sessionDTO) {
+        log.info("Creating LiteSession...");
         if (sessionDTO == null) {
+            log.error("Session data is null.");
             throw new IllegalArgumentException("Session data must not be null.");
         }
         final LiteSessionEntity liteSessionEntity = LiteSessionEntityDTOMapper.map(sessionDTO);
-        final LiteSessionEntity savedEntity =  liteSessionRepository.save(liteSessionEntity);
+        final LiteSessionEntity savedEntity = liteSessionRepository.save(liteSessionEntity);
+        log.info("LiteSession created with ID: {}", savedEntity.getSessionId());
         return LiteSessionEntityDTOMapper.map(savedEntity);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @Cacheable(value = "sessionCache", key = "#id")
+    @Cacheable(value = "sessionCache", key = "#sessionId")
     public SessionDTO getSessionById(Integer sessionId) {
+        log.info("Getting session by ID: {}", sessionId);
         Optional<SessionEntity> sessionEntityOpt = sessionRepository.findById(sessionId);
         return sessionEntityOpt.map(SessionEntityDTOMapper::map).orElse(null);
     }
@@ -114,7 +103,8 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(rollbackFor = Exception.class)
     @Cacheable(value = "allSessionsCache", key = "'allSessions'")
     public List<SessionDTO> getAllSessions() {
-        List<SessionEntity> sessions= sessionRepository.findAll();
+        log.info("Fetching all sessions...");
+        List<SessionEntity> sessions = sessionRepository.findAll();
         return sessions.stream()
                 .map(SessionEntityDTOMapper::map)
                 .collect(Collectors.toList());
@@ -125,9 +115,11 @@ public class SessionServiceImpl implements SessionService {
     @CacheEvict(value = "allSessionsCache", allEntries = true)
     @CachePut(value = "sessionCache", key = "#sessionDTO.sessionId")
     public SessionDTO updateSession(SessionDTO sessionDTO) {
+        log.info("Updating session with ID: {}", sessionDTO.getSessionId());
         Optional<SessionEntity> optionalSessionEntity = sessionRepository.findById(sessionDTO.getSessionId());
 
         if (optionalSessionEntity.isEmpty()) {
+            log.error("Session not found with ID: {}", sessionDTO.getSessionId());
             throw new RuntimeException("Session not found with ID: " + sessionDTO.getSessionId());
         }
 
@@ -147,6 +139,7 @@ public class SessionServiceImpl implements SessionService {
             // Update mentor based on classroom (since classroom has one mentor)
             MentorEntity mentorEntity = classRoomEntity.getMentor();
             if (mentorEntity == null) {
+                log.error("No mentor assigned to ClassRoom with ID: {}", classRoomEntity.getClassRoomId());
                 throw new RuntimeException("No mentor assigned to ClassRoom with ID: " + classRoomEntity.getClassRoomId());
             }
             sessionEntity.setMentorEntity(mentorEntity);
@@ -161,6 +154,7 @@ public class SessionServiceImpl implements SessionService {
 
         // Save updated entity
         SessionEntity updatedSession = sessionRepository.save(sessionEntity);
+        log.info("Session updated with ID: {}", updatedSession.getSessionId());
         return SessionEntityDTOMapper.map(updatedSession);
     }
 
@@ -168,25 +162,35 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = {"sessionCache", "allSessionsCache"}, allEntries = true)
     public SessionDTO deleteSessionById(Integer id) {
+        log.info("Deleting session with ID: {}", id);
         Optional<SessionEntity> sessionEntityOpt = sessionRepository.findById(id);
         if (sessionEntityOpt.isEmpty()) {
+            log.error("Session not found with ID: {}", id);
             throw new RuntimeException("Session not found with ID: " + id);
         }
 
         SessionEntity sessionEntity = sessionEntityOpt.get();
         sessionRepository.deleteById(id);
+        log.info("Session deleted with ID: {}", id);
         return SessionEntityDTOMapper.map(sessionEntity);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    @Cacheable(value = "allAuditsCache", key = "'allAudits'")
     public List<AuditDTO> getAllAudits() {
+        log.info("Fetching all audit DTOs...");
         List<SessionEntity> sessions = sessionRepository.findAll();
         return sessions.stream().map(AuditDTOEntityMapper::map).toList();
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<PaymentDTO> findMentorPayments(String startDate, String endDate) {
+        log.info("Finding mentor payments from {} to {}", startDate, endDate);
+
         if (startDate == null || endDate == null) {
+            log.error("Start or end date is null");
             throw new IllegalArgumentException("Start date and end date must not be null.");
         }
 
@@ -197,6 +201,7 @@ public class SessionServiceImpl implements SessionService {
         List<Object[]> rawResults = sessionRepository.findMentorPayments(formattedStartDate, formattedEndDate);
 
         if (rawResults == null || rawResults.isEmpty()) {
+            log.warn("No payment records found");
             return Collections.emptyList();
         }
 
@@ -208,20 +213,26 @@ public class SessionServiceImpl implements SessionService {
                 return new PaymentDTO(mentorId, mentorName, totalFee);
             }).toList();
         } catch (ClassCastException | ArrayIndexOutOfBoundsException e) {
+            log.error("Data format error in mentor payment results: {}", e.getMessage());
             throw new RuntimeException("Data format error in mentor payment results", e);
         }
     }
 
     // NEW: Get all sessions for a specific student
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<SessionDTO> getSessionsByStudentId(Integer studentId) {
         // Validate student exists
+        log.info("Getting all sessions for student ID: {}", studentId);
         Optional<StudentEntity> studentEntityOpt = studentRepository.findById(studentId);
         if (studentEntityOpt.isEmpty()) {
+            log.error("Student not found with ID: {}", studentId);
             throw new RuntimeException("Student not found with ID: " + studentId);
         }
 
         List<SessionEntity> sessionEntities = sessionRepository.findByStudentEntityStudentId(studentId);
+        log.info("Found {} sessions for student ID {}", sessionEntities.size(), studentId);
+
         return sessionEntities.stream()
                 .map(SessionEntityDTOMapper::map)
                 .collect(Collectors.toList());
