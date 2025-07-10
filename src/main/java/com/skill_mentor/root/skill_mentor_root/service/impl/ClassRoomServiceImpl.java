@@ -11,6 +11,9 @@ import com.skill_mentor.root.skill_mentor_root.repository.MentorRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.SessionRepository;
 import com.skill_mentor.root.skill_mentor_root.service.ClassRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -27,6 +30,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     private SessionRepository sessionRepository;
 
     @Override
+    @CacheEvict(value = {"classroomCache", "allClassroomsCache"}, allEntries = true)
     public ClassRoomDTO createClassRoom(ClassRoomDTO classRoomDTO) {
         try {
             // Validate required fields
@@ -70,6 +74,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     }
 
     @Override
+    @Cacheable(value = "allClassroomsCache", key = "'allClassrooms'")
     public List<ClassRoomDTO> getAllClassRooms() {
         List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAll();
         return classRoomEntities.stream()
@@ -78,6 +83,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     }
 
     @Override
+    @Cacheable(value = "classroomCache", key = "#id")
     public ClassRoomDTO findClassRoomById(Integer id) {
         Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(id);
         if (classRoomEntityOpt.isEmpty()) {
@@ -87,6 +93,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     }
 
     @Override
+    @CacheEvict(value = {"classroomCache", "allClassroomsCache"}, allEntries = true)
     public ClassRoomDTO deleteClassRoomById(Integer id) {
         final ClassRoomEntity classRoomEntity = classRoomRepository.findById(id)
                 .orElseThrow(() -> new ClassRoomException("ClassRoom not found with ID: " + id));
@@ -113,6 +120,8 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     }
 
     @Override
+    @CachePut(value = "classroomCache", key = "#classRoomDTO.classRoomId")
+    @CacheEvict(value = "allClassroomsCache", allEntries = true)
     public ClassRoomDTO updateClassRoom(ClassRoomDTO classRoomDTO) {
         Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(classRoomDTO.getClassRoomId());
         if (classRoomEntityOpt.isEmpty()) {
