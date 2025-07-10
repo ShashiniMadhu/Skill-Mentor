@@ -19,6 +19,9 @@ import com.skill_mentor.root.skill_mentor_root.repository.SessionRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.StudentRepository;
 import com.skill_mentor.root.skill_mentor_root.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -87,6 +90,7 @@ public class SessionServiceImpl implements SessionService {
 
     //for liteDTO
     @Override
+    @CacheEvict(value = {"sessionCache", "allSessionsCache"}, allEntries = true)
     public LiteSessionDTO createSession(final LiteSessionDTO sessionDTO) {
         if (sessionDTO == null) {
             throw new IllegalArgumentException("Session data must not be null.");
@@ -97,12 +101,14 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    @Cacheable(value = "sessionCache", key = "#id")
     public SessionDTO getSessionById(Integer sessionId) {
         Optional<SessionEntity> sessionEntityOpt = sessionRepository.findById(sessionId);
         return sessionEntityOpt.map(SessionEntityDTOMapper::map).orElse(null);
     }
 
     @Override
+    @Cacheable(value = "allSessionsCache", key = "'allSessions'")
     public List<SessionDTO> getAllSessions() {
         List<SessionEntity> sessions= sessionRepository.findAll();
         return sessions.stream()
@@ -111,57 +117,8 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public List<AuditDTO> getAllAudits() {
-        List<SessionEntity> sessions = sessionRepository.findAll();
-        return sessions.stream().map(AuditDTOEntityMapper::map).toList();
-    }
-
-    @Override
-    public List<PaymentDTO> findMentorPayments(String startDate, String endDate) {
-        if (startDate == null || endDate == null) {
-            throw new IllegalArgumentException("Start date and end date must not be null.");
-        }
-
-        // Format dates to include time if not already present
-        String formattedStartDate = startDate.contains(" ") ? startDate : startDate + " 00:00:00";
-        String formattedEndDate = endDate.contains(" ") ? endDate : endDate + " 23:59:59";
-
-        List<Object[]> rawResults = sessionRepository.findMentorPayments(formattedStartDate, formattedEndDate);
-
-        if (rawResults == null || rawResults.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        try {
-            return rawResults.stream().map(row -> {
-                Integer mentorId = ((Number) row[0]).intValue();
-                String mentorName = String.valueOf(row[1]);
-                Double totalFee = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
-                return new PaymentDTO(mentorId, mentorName, totalFee);
-            }).toList();
-        } catch (ClassCastException | ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException("Data format error in mentor payment results", e);
-        }
-    }
-
-
-
-    // NEW: Get all sessions for a specific student
-    @Override
-    public List<SessionDTO> getSessionsByStudentId(Integer studentId) {
-        // Validate student exists
-        Optional<StudentEntity> studentEntityOpt = studentRepository.findById(studentId);
-        if (studentEntityOpt.isEmpty()) {
-            throw new RuntimeException("Student not found with ID: " + studentId);
-        }
-
-        List<SessionEntity> sessionEntities = sessionRepository.findByStudentEntityStudentId(studentId);
-        return sessionEntities.stream()
-                .map(SessionEntityDTOMapper::map)
-                .collect(Collectors.toList());
-    }
-
-    @Override
+    @CachePut(value = "sessionCache", key = "#sessionDTO.sessionId")
+    @CacheEvict(value = "allSessionsCache", allEntries = true)
     public SessionDTO updateSession(SessionDTO sessionDTO) {
         Optional<SessionEntity> optionalSessionEntity = sessionRepository.findById(sessionDTO.getSessionId());
 
@@ -203,6 +160,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    @CacheEvict(value = {"sessionCache", "allSessionsCache"}, allEntries = true)
     public SessionDTO deleteSessionById(Integer id) {
         Optional<SessionEntity> sessionEntityOpt = sessionRepository.findById(id);
         if (sessionEntityOpt.isEmpty()) {
@@ -212,5 +170,54 @@ public class SessionServiceImpl implements SessionService {
         SessionEntity sessionEntity = sessionEntityOpt.get();
         sessionRepository.deleteById(id);
         return SessionEntityDTOMapper.map(sessionEntity);
+    }
+
+    @Override
+    public List<AuditDTO> getAllAudits() {
+        List<SessionEntity> sessions = sessionRepository.findAll();
+        return sessions.stream().map(AuditDTOEntityMapper::map).toList();
+    }
+
+    @Override
+    public List<PaymentDTO> findMentorPayments(String startDate, String endDate) {
+        if (startDate == null || endDate == null) {
+            throw new IllegalArgumentException("Start date and end date must not be null.");
+        }
+
+        // Format dates to include time if not already present
+        String formattedStartDate = startDate.contains(" ") ? startDate : startDate + " 00:00:00";
+        String formattedEndDate = endDate.contains(" ") ? endDate : endDate + " 23:59:59";
+
+        List<Object[]> rawResults = sessionRepository.findMentorPayments(formattedStartDate, formattedEndDate);
+
+        if (rawResults == null || rawResults.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        try {
+            return rawResults.stream().map(row -> {
+                Integer mentorId = ((Number) row[0]).intValue();
+                String mentorName = String.valueOf(row[1]);
+                Double totalFee = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+                return new PaymentDTO(mentorId, mentorName, totalFee);
+            }).toList();
+        } catch (ClassCastException | ArrayIndexOutOfBoundsException e) {
+            throw new RuntimeException("Data format error in mentor payment results", e);
+        }
+    }
+
+    // NEW: Get all sessions for a specific student
+    @Override
+    public List<SessionDTO> getSessionsByStudentId(Integer studentId) {
+        // Validate student exists
+        Optional<StudentEntity> studentEntityOpt = studentRepository.findById(studentId);
+        if (studentEntityOpt.isEmpty()) {
+            throw new RuntimeException("Student not found with ID: " + studentId);
+        }
+
+        List<SessionEntity> sessionEntities = sessionRepository.findByStudentEntityStudentId(studentId);
+        return sessionEntities.stream()
+                .map(SessionEntityDTOMapper::map)
+                .collect(Collectors.toList());
     }
 }

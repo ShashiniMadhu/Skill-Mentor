@@ -11,6 +11,9 @@ import com.skill_mentor.root.skill_mentor_root.repository.MentorRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.SessionRepository;
 import com.skill_mentor.root.skill_mentor_root.service.MentorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +34,7 @@ public class MentorServiceImpl implements MentorService {
     private SessionRepository sessionRepository;
 
     @Override
+    @CacheEvict(value = {"mentorCache", "allMentorsCache"}, allEntries = true)
     public MentorDTO createMentor(MentorDTO mentorDTO) throws MentorException {
         // Check if mentor already has a classroom assigned
         if (mentorDTO.getClassRoomId() != null) {
@@ -65,6 +69,7 @@ public class MentorServiceImpl implements MentorService {
 
 
     @Override
+    @Cacheable(value = "allMentorsCache", key = "'allMentors'")
     public List<MentorDTO> getAllMentors(String subject) {
 //        final List<MentorEntity> mentorEntities = mentorRepository.findAll();
         return mentorRepository.findAll().stream()
@@ -74,6 +79,7 @@ public class MentorServiceImpl implements MentorService {
     }
 
     @Override
+    @Cacheable(value = "mentorCache", key = "#id")
     public MentorDTO findMentorById(Integer id) throws MentorException{
         return mentorRepository.findById(id)
                 .map(MentorEntityDTOMapper::map)
@@ -81,6 +87,8 @@ public class MentorServiceImpl implements MentorService {
     }
 
     @Override
+    @CachePut(value = "mentorCache", key = "#mentorDTO.mentorId")
+    @CacheEvict(value = "allMentorsCache", allEntries = true)
     public MentorDTO updateMentorById(MentorDTO mentorDTO) throws MentorException{
         final MentorEntity mentorEntity = mentorRepository.findById(mentorDTO.getMentorId())
                 .orElseThrow(() -> new MentorException("Cannot update. Mentor not found with ID: " + mentorDTO.getMentorId()));
@@ -137,6 +145,7 @@ public class MentorServiceImpl implements MentorService {
     }
 
     @Override
+    @CacheEvict(value = {"mentorCache", "allMentorsCache"}, allEntries = true)
     public MentorDTO deleteMentorById(Integer id) throws MentorException {
         final MentorEntity mentorEntity = mentorRepository.findById(id)
                 .orElseThrow(() -> new MentorException("Cannot delete. Mentor not found with ID: " + id));
