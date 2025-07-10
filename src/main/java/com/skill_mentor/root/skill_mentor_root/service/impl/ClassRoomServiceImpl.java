@@ -4,6 +4,7 @@ import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
 import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.SessionEntity;
+import com.skill_mentor.root.skill_mentor_root.exception.ClassRoomException;
 import com.skill_mentor.root.skill_mentor_root.mapper.ClassRoomEntityDTOMapper;
 import com.skill_mentor.root.skill_mentor_root.repository.ClassRoomRepository;
 import com.skill_mentor.root.skill_mentor_root.repository.MentorRepository;
@@ -79,13 +80,16 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     @Override
     public ClassRoomDTO findClassRoomById(Integer id) {
         Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(id);
-        return classRoomEntityOpt.map(ClassRoomEntityDTOMapper::map).orElse(null);
+        if (classRoomEntityOpt.isEmpty()) {
+            throw new ClassRoomException("ClassRoom not found");
+        }
+        return ClassRoomEntityDTOMapper.map(classRoomEntityOpt.get());
     }
 
     @Override
     public ClassRoomDTO deleteClassRoomById(Integer id) {
         final ClassRoomEntity classRoomEntity = classRoomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ClassRoom not found with ID: " + id));
+                .orElseThrow(() -> new ClassRoomException("ClassRoom not found with ID: " + id));
 
         // Remove mentor relationship before deletion
         if (classRoomEntity.getMentor() != null) {
@@ -112,7 +116,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     public ClassRoomDTO updateClassRoom(ClassRoomDTO classRoomDTO) {
         Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(classRoomDTO.getClassRoomId());
         if (classRoomEntityOpt.isEmpty()) {
-            throw new RuntimeException("ClassRoom not found with ID: " + classRoomDTO.getClassRoomId());
+            throw new ClassRoomException("ClassRoom not found with ID: " + classRoomDTO.getClassRoomId());
         }
 
         final ClassRoomEntity classRoomEntity = classRoomEntityOpt.get();
