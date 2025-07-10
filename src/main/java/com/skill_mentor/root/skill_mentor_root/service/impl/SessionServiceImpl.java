@@ -23,6 +23,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -90,6 +91,7 @@ public class SessionServiceImpl implements SessionService {
 
     //for liteDTO
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = {"sessionCache", "allSessionsCache"}, allEntries = true)
     public LiteSessionDTO createSession(final LiteSessionDTO sessionDTO) {
         if (sessionDTO == null) {
@@ -101,6 +103,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @Cacheable(value = "sessionCache", key = "#id")
     public SessionDTO getSessionById(Integer sessionId) {
         Optional<SessionEntity> sessionEntityOpt = sessionRepository.findById(sessionId);
@@ -108,6 +111,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @Cacheable(value = "allSessionsCache", key = "'allSessions'")
     public List<SessionDTO> getAllSessions() {
         List<SessionEntity> sessions= sessionRepository.findAll();
@@ -117,8 +121,9 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    @CachePut(value = "sessionCache", key = "#sessionDTO.sessionId")
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = "allSessionsCache", allEntries = true)
+    @CachePut(value = "sessionCache", key = "#sessionDTO.sessionId")
     public SessionDTO updateSession(SessionDTO sessionDTO) {
         Optional<SessionEntity> optionalSessionEntity = sessionRepository.findById(sessionDTO.getSessionId());
 
@@ -160,6 +165,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = {"sessionCache", "allSessionsCache"}, allEntries = true)
     public SessionDTO deleteSessionById(Integer id) {
         Optional<SessionEntity> sessionEntityOpt = sessionRepository.findById(id);

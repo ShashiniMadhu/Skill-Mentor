@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -30,6 +31,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     private SessionRepository sessionRepository;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = {"classroomCache", "allClassroomsCache"}, allEntries = true)
     public ClassRoomDTO createClassRoom(ClassRoomDTO classRoomDTO) {
         try {
@@ -74,6 +76,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @Cacheable(value = "allClassroomsCache", key = "'allClassrooms'")
     public List<ClassRoomDTO> getAllClassRooms() {
         List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAll();
@@ -83,6 +86,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @Cacheable(value = "classroomCache", key = "#id")
     public ClassRoomDTO findClassRoomById(Integer id) {
         Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(id);
@@ -93,6 +97,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = {"classroomCache", "allClassroomsCache"}, allEntries = true)
     public ClassRoomDTO deleteClassRoomById(Integer id) {
         final ClassRoomEntity classRoomEntity = classRoomRepository.findById(id)
@@ -120,8 +125,9 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     }
 
     @Override
-    @CachePut(value = "classroomCache", key = "#classRoomDTO.classRoomId")
+    @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = "allClassroomsCache", allEntries = true)
+    @CachePut(value = "classroomCache", key = "#classRoomDTO.classRoomId")
     public ClassRoomDTO updateClassRoom(ClassRoomDTO classRoomDTO) {
         Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findById(classRoomDTO.getClassRoomId());
         if (classRoomEntityOpt.isEmpty()) {
