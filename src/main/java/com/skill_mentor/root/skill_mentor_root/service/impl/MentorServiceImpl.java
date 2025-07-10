@@ -31,7 +31,7 @@ public class MentorServiceImpl implements MentorService {
     private SessionRepository sessionRepository;
 
     @Override
-    public MentorDTO createMentor(MentorDTO mentorDTO) {
+    public MentorDTO createMentor(MentorDTO mentorDTO) throws MentorException {
         // Check if mentor already has a classroom assigned
         if (mentorDTO.getClassRoomId() != null) {
             ClassRoomEntity classRoom = classRoomRepository.findById(mentorDTO.getClassRoomId())
@@ -74,14 +74,14 @@ public class MentorServiceImpl implements MentorService {
     }
 
     @Override
-    public MentorDTO findMentorById(Integer id) {
+    public MentorDTO findMentorById(Integer id) throws MentorException{
         return mentorRepository.findById(id)
                 .map(MentorEntityDTOMapper::map)
                 .orElseThrow(() -> new MentorException("Mentor not found with ID: " + id));
     }
 
     @Override
-    public MentorDTO updateMentorById(MentorDTO mentorDTO) {
+    public MentorDTO updateMentorById(MentorDTO mentorDTO) throws MentorException{
         final MentorEntity mentorEntity = mentorRepository.findById(mentorDTO.getMentorId())
                 .orElseThrow(() -> new MentorException("Cannot update. Mentor not found with ID: " + mentorDTO.getMentorId()));
 
@@ -137,7 +137,7 @@ public class MentorServiceImpl implements MentorService {
     }
 
     @Override
-    public MentorDTO deleteMentorById(Integer id) {
+    public MentorDTO deleteMentorById(Integer id) throws MentorException {
         final MentorEntity mentorEntity = mentorRepository.findById(id)
                 .orElseThrow(() -> new MentorException("Cannot delete. Mentor not found with ID: " + id));
 
