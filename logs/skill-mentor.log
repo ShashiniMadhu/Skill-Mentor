@@ -421,3 +421,40 @@ java.lang.RuntimeException: Mentor with ID 17 already has a classroom assigned
 2025-07-11T01:06:20.118+05:30  INFO 16036 --- [skill-mentor-root] [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
 2025-07-11T01:06:20.217+05:30  INFO 16036 --- [skill-mentor-root] [http-nio-8080-exec-1] c.s.r.s.service.impl.SessionServiceImpl  : Fetching all audit DTOs...
 2025-07-11T01:06:26.477+05:30  INFO 16036 --- [skill-mentor-root] [http-nio-8080-exec-4] c.s.r.s.service.impl.SessionServiceImpl  : Finding mentor payments from 2025-07-01 to 2025-07-31
+2025-07-11T01:12:19.793+05:30  INFO 16036 --- [skill-mentor-root] [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-07-11T01:12:19.811+05:30  INFO 16036 --- [skill-mentor-root] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-07-11T01:12:19.823+05:30  INFO 16036 --- [skill-mentor-root] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-07-11T01:12:19.837+05:30  INFO 16036 --- [skill-mentor-root] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-07-11T01:12:19.871+05:30  INFO 16036 --- [skill-mentor-root] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-07-11T01:12:22.567+05:30  INFO 16528 --- [skill-mentor-root] [main] c.s.r.s.SkillMentorRootApplication       : Starting SkillMentorRootApplication using Java 22.0.1 with PID 16528 (C:\Users\Shashini Madhushika\Desktop\Skill-Mentor\target\classes started by Shashini Madhushika in C:\Users\Shashini Madhushika\Desktop\Skill-Mentor)
+2025-07-11T01:12:22.570+05:30  INFO 16528 --- [skill-mentor-root] [main] c.s.r.s.SkillMentorRootApplication       : No active profile set, falling back to 1 default profile: "default"
+2025-07-11T01:12:23.539+05:30  INFO 16528 --- [skill-mentor-root] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-07-11T01:12:23.629+05:30  INFO 16528 --- [skill-mentor-root] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 81 ms. Found 5 JPA repository interfaces.
+2025-07-11T01:12:24.283+05:30  INFO 16528 --- [skill-mentor-root] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2025-07-11T01:12:24.296+05:30  INFO 16528 --- [skill-mentor-root] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-07-11T01:12:24.297+05:30  INFO 16528 --- [skill-mentor-root] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.40]
+2025-07-11T01:12:24.350+05:30  INFO 16528 --- [skill-mentor-root] [main] o.a.c.c.C.[.[localhost].[/api/v1]        : Initializing Spring embedded WebApplicationContext
+2025-07-11T01:12:24.350+05:30  INFO 16528 --- [skill-mentor-root] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1705 ms
+2025-07-11T01:12:24.562+05:30  INFO 16528 --- [skill-mentor-root] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-07-11T01:12:24.650+05:30  INFO 16528 --- [skill-mentor-root] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.13.Final
+2025-07-11T01:12:24.697+05:30  INFO 16528 --- [skill-mentor-root] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-07-11T01:12:25.172+05:30  INFO 16528 --- [skill-mentor-root] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-07-11T01:12:25.205+05:30  INFO 16528 --- [skill-mentor-root] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-07-11T01:12:25.394+05:30  INFO 16528 --- [skill-mentor-root] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7f93f4c
+2025-07-11T01:12:25.396+05:30  INFO 16528 --- [skill-mentor-root] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-07-11T01:12:25.436+05:30  WARN 16528 --- [skill-mentor-root] [main] org.hibernate.dialect.Dialect            : HHH000511: The 5.5.5 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2025-07-11T01:12:25.441+05:30  WARN 16528 --- [skill-mentor-root] [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-07-11T01:12:25.465+05:30  INFO 16528 --- [skill-mentor-root] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 5.5.5
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-07-11T01:12:26.426+05:30  INFO 16528 --- [skill-mentor-root] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-07-11T01:12:26.526+05:30  INFO 16528 --- [skill-mentor-root] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-07-11T01:12:26.908+05:30  INFO 16528 --- [skill-mentor-root] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-07-11T01:12:27.173+05:30  WARN 16528 --- [skill-mentor-root] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-07-11T01:12:27.664+05:30  INFO 16528 --- [skill-mentor-root] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/api/v1'
+2025-07-11T01:12:27.679+05:30  INFO 16528 --- [skill-mentor-root] [main] c.s.r.s.SkillMentorRootApplication       : Started SkillMentorRootApplication in 5.779 seconds (process running for 6.293)
