@@ -7,6 +7,7 @@ import com.skill_mentor.root.skill_mentor_root.repository.*;
 import com.skill_mentor.root.skill_mentor_root.service.SessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class SessionServiceImpl implements SessionService {
+
+    @Value("${spring.datasource.url}")
+    private String datasource;
 
     @Autowired
     private SessionRepository sessionRepository;
@@ -86,7 +90,7 @@ public class SessionServiceImpl implements SessionService {
         }
         final LiteSessionEntity liteSessionEntity = LiteSessionEntityDTOMapper.map(sessionDTO);
         final LiteSessionEntity savedEntity = liteSessionRepository.save(liteSessionEntity);
-        log.info("LiteSession created with ID: {}", savedEntity.getSessionId());
+        log.info("LiteSession created with ID: {} ata datasource:{}", savedEntity.getSessionId(),this.datasource);
         return LiteSessionEntityDTOMapper.map(savedEntity);
     }
 

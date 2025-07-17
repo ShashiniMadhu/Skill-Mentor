@@ -12,6 +12,7 @@ import com.skill_mentor.root.skill_mentor_root.repository.SessionRepository;
 import com.skill_mentor.root.skill_mentor_root.service.ClassRoomService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,6 +24,10 @@ import java.util.*;
 @Slf4j
 @Service
 public class ClassRoomServiceImpl implements ClassRoomService {
+
+    @Value("${spring.datasource.url}")
+    private String datasource;
+
     @Autowired
     private ClassRoomRepository classRoomRepository;
 
@@ -71,7 +76,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
             }
 
             final ClassRoomEntity savedEntity = classRoomRepository.save(classRoomEntity);
-            log.info("Classroom created with ID: {}", savedEntity.getClassRoomId());
+            log.info("Classroom created with ID: {} at datasource:{}", savedEntity.getClassRoomId(),this.datasource);
             return ClassRoomEntityDTOMapper.map(savedEntity);
 
         } catch (Exception e) {
@@ -84,7 +89,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     @Transactional(rollbackFor = Exception.class)
     @Cacheable(value = "allClassroomsCache", key = "'allClassrooms'")
     public List<ClassRoomDTO> getAllClassRooms() {
-        log.info("Fetching all classrooms...");
+        log.info("Fetching all classrooms... from datasource:{}",this.datasource);
         List<ClassRoomEntity> classRoomEntities = classRoomRepository.findAll();
         log.info("Found {} classrooms", classRoomEntities.size());
         return classRoomEntities.stream()
@@ -113,7 +118,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         log.info("Deleting classroom with ID: {}", id);
         final ClassRoomEntity classRoomEntity = classRoomRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("ClassRoom not found with ID: {}", id);
+                    log.error("ClassRoom not found with ID: {} from datasource:{}",this.datasource, id);
                     return new ClassRoomException("ClassRoom not found with ID: " + id);
                 });
 

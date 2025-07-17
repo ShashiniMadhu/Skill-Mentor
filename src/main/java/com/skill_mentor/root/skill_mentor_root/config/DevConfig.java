@@ -13,7 +13,7 @@ public class DevConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager("users", "skills", "courses");
+        return new ConcurrentMapCacheManager("studentCache", "allStudentsCache");
     }
 
     @PostConstruct

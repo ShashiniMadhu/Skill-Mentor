@@ -8,6 +8,7 @@ import com.skill_mentor.root.skill_mentor_root.repository.StudentRepository;
 import com.skill_mentor.root.skill_mentor_root.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,6 +21,10 @@ import java.util.Objects;
 @Slf4j
 @Service
 public class StudentServiceImpl implements StudentService {
+
+    @Value("${spring.datasource.url}")
+    private String datasource;
+
     @Autowired
     StudentRepository studentRepository;
 
@@ -36,7 +41,7 @@ public class StudentServiceImpl implements StudentService {
         log.debug("StudentDTO received: {}", studentDTO);
         final StudentEntity studentEntity = StudentEntityDTOMapper.map(studentDTO);
         final StudentEntity savedEntity = studentRepository.save(studentEntity);
-        log.info("Student created with ID: {}", savedEntity.getStudentId());
+        log.info("Student created with ID: {} at data-source: {}", savedEntity.getStudentId(), this.datasource);
         return StudentEntityDTOMapper.map(savedEntity);
     }
 
@@ -47,7 +52,7 @@ public class StudentServiceImpl implements StudentService {
         log.info("Fetching all students with filters: addresses={}, ages={}", addresses, age);
         final List<StudentEntity> studentEntities = studentRepository.findAll();
         //return studentEntities.stream().map(StudentEntityDTOMapper::map).toList(); // without any filter parameter
-        log.info("Found {} students after filtering", studentEntities.size());
+        log.info("Found {} students after filtering from datasource:{}", studentEntities.size(),this,datasource);
         return studentEntities.stream()
                 .filter(student->addresses == null || addresses.contains(student.getAddress()))//keep "contains" because of list of addresses
                 .filter(student->age == null || Objects.equals(age,student.getAge()))
@@ -106,7 +111,7 @@ public class StudentServiceImpl implements StudentService {
         log.info("Deleting student with ID: {}", id);
         final StudentEntity studentEntity = studentRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("Cannot delete. Student not found with ID: {}", id);
+                    log.error("Cannot delete. Student not found with ID: {} from data-source:{}", id,this.datasource);
                     return new StudentException("Cannot delete. Student not found with ID: " + id);
                 });
         studentRepository.delete(studentEntity);
