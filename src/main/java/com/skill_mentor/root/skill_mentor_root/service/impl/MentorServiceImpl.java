@@ -12,6 +12,7 @@ import com.skill_mentor.root.skill_mentor_root.repository.SessionRepository;
 import com.skill_mentor.root.skill_mentor_root.service.MentorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,12 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class MentorServiceImpl implements MentorService {
+
+    @Value("${spring.datasource.url}")
+    private String datasource;
 
     @Autowired
     MentorRepository mentorRepository;
@@ -45,8 +48,8 @@ public class MentorServiceImpl implements MentorService {
         if (mentorDTO.getClassRoomId() != null) {
             ClassRoomEntity classRoom = classRoomRepository.findById(mentorDTO.getClassRoomId())
                     .orElseThrow(() -> {
-                        log.error("ClassRoom not found with ID: {}", mentorDTO.getClassRoomId());
-                        return new MentorException("ClassRoom not found with ID?: " + mentorDTO.getClassRoomId());
+                        log.error("ClassRoom not found with ID: {} at datasource:{}", mentorDTO.getClassRoomId(),this.datasource);
+                        return new MentorException("ClassRoom not found with ID?: at datasource:{}" + mentorDTO.getClassRoomId() + this.datasource);
                     });
 
             if (classRoom.getMentor() != null) {
