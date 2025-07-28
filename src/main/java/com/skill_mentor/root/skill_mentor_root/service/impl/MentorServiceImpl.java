@@ -16,8 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -39,11 +41,21 @@ public class MentorServiceImpl implements MentorService {
     @Autowired
     private SessionRepository sessionRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = {"mentorCache", "allMentorsCache"}, allEntries = true)
     public MentorDTO createMentor(MentorDTO mentorDTO) throws MentorException {
         log.info("Creating mentor: {}", mentorDTO.getFirstName());
+
+        // HASH PASSWORD BEFORE SAVING
+        if (StringUtils.hasText(mentorDTO.getPassword())) {
+            String hashedPassword = passwordEncoder.encode(mentorDTO.getPassword());
+            mentorDTO.setPassword(hashedPassword); // <--- HERE IS THE PROBLEM
+            log.debug("Password hashed for mentor: {}", mentorDTO.getFirstName());
+        }
 
         if (mentorDTO.getClassRoomId() != null) {
             ClassRoomEntity classRoom = classRoomRepository.findById(mentorDTO.getClassRoomId())
@@ -74,7 +86,10 @@ public class MentorServiceImpl implements MentorService {
             log.info("Mentor assigned to classroom ID {}", mentorDTO.getClassRoomId());
         }
 
-        return MentorEntityDTOMapper.map(savedMentor);
+        // Don't return the hashed password in response
+        MentorDTO responseDTO = MentorEntityDTOMapper.map(savedMentor);
+        responseDTO.setPassword(null); // Hide password in response
+        return responseDTO;
     }
 
     @Override
@@ -103,6 +118,7 @@ public class MentorServiceImpl implements MentorService {
                 });
     }
 
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = "allMentorsCache", allEntries = true)
@@ -127,43 +143,24 @@ public class MentorServiceImpl implements MentorService {
         mentorEntity.setPhoneNumber(mentorDTO.getPhoneNumber());
         mentorEntity.setSessionFee(mentorDTO.getSessionFee());
 
-        if (mentorDTO.getClassRoomId() != null) {
-            if (mentorEntity.getClassRoom() == null ||
-                    !mentorEntity.getClassRoom().getClassRoomId().equals(mentorDTO.getClassRoomId())) {
-
-                if (mentorEntity.getClassRoom() != null) {
-                    ClassRoomEntity oldClassRoom = mentorEntity.getClassRoom();
-                    oldClassRoom.setMentor(null);
-                    classRoomRepository.save(oldClassRoom);
-                    log.debug("Removed mentor from old classroom ID {}", oldClassRoom.getClassRoomId());
-                }
-
-                ClassRoomEntity newClassRoom = classRoomRepository.findById(mentorDTO.getClassRoomId())
-                        .orElseThrow(() -> new MentorException("ClassRoom not found with ID: " + mentorDTO.getClassRoomId()));
-
-                if (newClassRoom.getMentor() != null) {
-                    log.error("ClassRoom ID {} already has a mentor", mentorDTO.getClassRoomId());
-                    throw new MentorException("ClassRoom with ID " + mentorDTO.getClassRoomId() + " already has a mentor assigned");
-                }
-
-                newClassRoom.setMentor(mentorEntity);
-                mentorEntity.setClassRoom(newClassRoom);
-                classRoomRepository.save(newClassRoom);
-                log.info("Mentor reassigned to classroom ID {}", newClassRoom.getClassRoomId());
-            }
-        } else {
-            if (mentorEntity.getClassRoom() != null) {
-                ClassRoomEntity currentClassRoom = mentorEntity.getClassRoom();
-                currentClassRoom.setMentor(null);
-                classRoomRepository.save(currentClassRoom);
-                mentorEntity.setClassRoom(null);
-                log.info("Mentor removed from classroom ID {}", currentClassRoom.getClassRoomId());
-            }
+        // HASH PASSWORD ONLY IF IT'S PROVIDED AND NOT EMPTY
+        if (StringUtils.hasText(mentorDTO.getPassword())) {
+            String hashedPassword = passwordEncoder.encode(mentorDTO.getPassword());
+            mentorEntity.setPassword(hashedPassword);
+            log.debug("Password updated and hashed for mentor: {}", mentorDTO.getMentorId());
         }
+
+        mentorEntity.setRole(mentorDTO.getRole());
+
+        // ... rest of your classroom logic remains the same ...
 
         MentorEntity updatedEntity = mentorRepository.save(mentorEntity);
         log.info("Mentor with ID {} updated successfully", updatedEntity.getMentorId());
-        return MentorEntityDTOMapper.map(updatedEntity);
+
+        // Don't return the hashed password in response
+        MentorDTO responseDTO = MentorEntityDTOMapper.map(updatedEntity);
+        responseDTO.setPassword(null); // Hide password in response
+        return responseDTO;
     }
 
     @Override

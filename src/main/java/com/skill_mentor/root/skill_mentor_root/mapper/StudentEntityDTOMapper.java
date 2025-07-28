@@ -13,6 +13,8 @@ public class StudentEntityDTOMapper {
         studentDTO.setPhoneNumber(studentEntity.getPhoneNumber());
         studentDTO.setAddress(studentEntity.getAddress());
         studentDTO.setAge(studentEntity.getAge());
+        studentDTO.setPassword(studentEntity.getPassword());
+        studentDTO.setRole(studentEntity.getRole());
         return studentDTO;
     }
 
@@ -25,6 +27,8 @@ public class StudentEntityDTOMapper {
         studentEntity.setPhoneNumber(studentDTO.getPhoneNumber());
         studentEntity.setAddress(studentDTO.getAddress());
         studentEntity.setAge(studentDTO.getAge());
+        studentEntity.setPassword(studentDTO.getPassword());
+        studentEntity.setRole(studentDTO.getRole());
         return studentEntity;
     }
 }

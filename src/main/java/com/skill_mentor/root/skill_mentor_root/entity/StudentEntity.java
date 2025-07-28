@@ -46,4 +46,10 @@ public class StudentEntity {
     @Min(value = 1, message = "Age must be at least 1")
     @Column(name = "age", nullable = false)
     private Integer age;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "role", nullable = false)
+    private String role;
 }
