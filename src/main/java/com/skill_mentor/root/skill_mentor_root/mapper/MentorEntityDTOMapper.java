@@ -25,6 +25,7 @@ public class MentorEntityDTOMapper {
         mentorDTO.setSessionFee(mentorEntity.getSessionFee());
         mentorDTO.setPassword(mentorEntity.getPassword());
         mentorDTO.setRole(mentorEntity.getRole());
+        mentorDTO.setBio(mentorEntity.getBio());
 
         // If you need classRoomId in your DTO, get it from the relationship
         if (mentorEntity.getClassRoom() != null) {
@@ -59,6 +60,7 @@ public class MentorEntityDTOMapper {
         mentorDTO.setSessionFee(mentorEntity.getSessionFee());
         mentorDTO.setPassword(mentorEntity.getPassword());
         mentorDTO.setRole(mentorEntity.getRole());
+        mentorDTO.setBio(mentorEntity.getBio());
 
         // Only set classRoomId, don't map the full classroom object
         if (mentorEntity.getClassRoom() != null) {
@@ -84,6 +86,7 @@ public class MentorEntityDTOMapper {
         mentorEntity.setSessionFee(mentorDTO.getSessionFee());
         mentorEntity.setPassword(mentorDTO.getPassword());
         mentorEntity.setRole(mentorDTO.getRole());
+        mentorEntity.setBio(mentorDTO.getBio());
 
         return mentorEntity;
     }

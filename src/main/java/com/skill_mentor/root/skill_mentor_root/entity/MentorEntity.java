@@ -81,4 +81,8 @@ public class MentorEntity {
 
     @Column(name = "role", nullable = false)
     private String role;
+
+    @Column(name = "bio")
+    private String bio;
+
 }

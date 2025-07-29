@@ -80,4 +80,8 @@ public class MentorDTO {
 
     @JsonProperty("role")
     private String role;
+
+    @JsonProperty("bio")
+    private String bio;
+
 }

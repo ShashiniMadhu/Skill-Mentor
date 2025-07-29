@@ -142,6 +142,9 @@ public class MentorServiceImpl implements MentorService {
         mentorEntity.setQualification(mentorDTO.getQualification());
         mentorEntity.setPhoneNumber(mentorDTO.getPhoneNumber());
         mentorEntity.setSessionFee(mentorDTO.getSessionFee());
+        mentorEntity.setPassword(mentorDTO.getPassword());
+        mentorEntity.setRole(mentorDTO.getRole());
+        mentorEntity.setBio(mentorDTO.getBio());
 
         // HASH PASSWORD ONLY IF IT'S PROVIDED AND NOT EMPTY
         if (StringUtils.hasText(mentorDTO.getPassword())) {
