@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
 @NoArgsConstructor
@@ -61,13 +63,13 @@ public class AuditDTO {
     @JsonProperty("fee")
     private Double fee;
 
+    @NotNull(message = "Date must not be null")
+    @JsonProperty("date")
+    private LocalDate date;
+
     @NotNull(message = "Start time must not be null")
     @JsonProperty("start_time")
-    private Instant startTime;
-
-    @NotNull(message = "End time must not be null")
-    @JsonProperty("end_time")
-    private Instant endTime;
+    private LocalTime startTime;
 
     @NotBlank(message = "Topic must not be blank")
     @JsonProperty("topic")

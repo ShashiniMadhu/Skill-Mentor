@@ -13,6 +13,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Data
@@ -42,12 +44,12 @@ public class LiteSessionEntity {
     @Column(name = "topic", nullable = false)
     private String topic;
 
+    @NotNull(message = "Date must not be null")
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
+
     @NotNull(message = "Start time must not be null")
     @Column(name = "start_time", nullable = false)
-    private Instant startTime;
-
-    @NotNull(message = "End time must not be null")
-    @Column(name = "end_time", nullable = false)
-    private Instant endTime;
+    private LocalTime startTime;
 
 }

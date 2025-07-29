@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,21 +30,36 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     StudentRepository studentRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = {"studentCache", "allStudentsCache"}, allEntries = true)
     public StudentDTO createStudent(StudentDTO studentDTO) {
         log.info("Creating new student...");
-        // Set studentId to null to ensure a new record is created
+
         if (studentDTO == null) {
             log.error("Failed to create student: input DTO is null.");
             throw new IllegalArgumentException("Student data must not be null.");
         }
-        log.debug("StudentDTO received: {}", studentDTO);
+
+        // HASH PASSWORD BEFORE SAVING
+        if (StringUtils.hasText(studentDTO.getPassword())) {
+            String hashedPassword = passwordEncoder.encode(studentDTO.getPassword());
+            studentDTO.setPassword(hashedPassword);
+            log.debug("Password hashed for student: {}", studentDTO.getFirstName());
+        }
+
+        log.debug("StudentDTO received: {}", studentDTO.getFirstName()); // Don't log full DTO with password
         final StudentEntity studentEntity = StudentEntityDTOMapper.map(studentDTO);
         final StudentEntity savedEntity = studentRepository.save(studentEntity);
         log.info("Student created with ID: {} at data-source: {}", savedEntity.getStudentId(), this.datasource);
-        return StudentEntityDTOMapper.map(savedEntity);
+
+        // Don't return the hashed password in response
+        StudentDTO responseDTO = StudentEntityDTOMapper.map(savedEntity);
+        responseDTO.setPassword(null); // Hide password in response
+        return responseDTO;
     }
 
     @Override
@@ -52,7 +69,7 @@ public class StudentServiceImpl implements StudentService {
         log.info("Fetching all students with filters: addresses={}, ages={}", addresses, age);
         final List<StudentEntity> studentEntities = studentRepository.findAll();
         //return studentEntities.stream().map(StudentEntityDTOMapper::map).toList(); // without any filter parameter
-        log.info("Found {} students after filtering from datasource:{}", studentEntities.size(),this,datasource);
+        log.info("Found {} students after filtering from datasource:{}", studentEntities.size(),this.datasource);
         return studentEntities.stream()
                 .filter(student->addresses == null || addresses.contains(student.getAddress()))//keep "contains" because of list of addresses
                 .filter(student->age == null || Objects.equals(age,student.getAge()))
@@ -92,6 +109,7 @@ public class StudentServiceImpl implements StudentService {
                     log.error("Cannot update. Student not found with ID: {}", studentDTO.getStudentId());
                     return new StudentException("Cannot update. Student not found with ID: " + studentDTO.getStudentId());
                 });
+
         studentEntity.setFirstName(studentDTO.getFirstName());
         studentEntity.setLastName(studentDTO.getLastName());
         studentEntity.setEmail(studentDTO.getEmail());
@@ -99,10 +117,24 @@ public class StudentServiceImpl implements StudentService {
         studentEntity.setAddress(studentDTO.getAddress());
         studentEntity.setAge(studentDTO.getAge());
 
+        // HASH PASSWORD ONLY IF IT'S PROVIDED AND NOT EMPTY
+        if (StringUtils.hasText(studentDTO.getPassword())) {
+            String hashedPassword = passwordEncoder.encode(studentDTO.getPassword());
+            studentEntity.setPassword(hashedPassword);
+            log.debug("Password updated and hashed for student: {}", studentDTO.getStudentId());
+        }
+
+        studentEntity.setRole(studentDTO.getRole());
+
         StudentEntity updated = studentRepository.save(studentEntity);
         log.info("Student updated with ID: {}", updated.getStudentId());
-        return StudentEntityDTOMapper.map(updated);
+
+        // Don't return the hashed password in response
+        StudentDTO responseDTO = StudentEntityDTOMapper.map(updated);
+        responseDTO.setPassword(null); // Hide password in response
+        return responseDTO;
     }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)

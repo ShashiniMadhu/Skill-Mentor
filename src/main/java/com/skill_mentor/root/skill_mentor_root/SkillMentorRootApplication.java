@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import javax.sql.DataSource;
 import java.sql.Connection;
 
-@EnableCaching
+//@EnableCaching
 @SpringBootApplication
 public class SkillMentorRootApplication {
 
