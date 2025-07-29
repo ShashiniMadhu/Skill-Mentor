@@ -130,8 +130,8 @@ public class SessionServiceImpl implements SessionService {
         SessionEntity sessionEntity = optionalSessionEntity.get();
 
         // Update basic fields
+        sessionEntity.setDate(sessionDTO.getDate());
         sessionEntity.setStartTime(sessionDTO.getStartTime());
-        sessionEntity.setEndTime(sessionDTO.getEndTime());
 
         // Update classroom if provided
         if (sessionDTO.getClassRoom() != null && sessionDTO.getClassRoom().getClassRoomId() != null) {

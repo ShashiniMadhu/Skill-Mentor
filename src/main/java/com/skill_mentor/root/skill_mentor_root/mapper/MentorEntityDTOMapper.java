@@ -96,7 +96,7 @@ public class MentorEntityDTOMapper {
         SessionDTO sessionDTO = new SessionDTO();
         sessionDTO.setSessionId(sessionEntity.getSessionId());
         sessionDTO.setStartTime(sessionEntity.getStartTime());
-        sessionDTO.setEndTime(sessionEntity.getEndTime());
+        sessionDTO.setDate(sessionEntity.getDate());
 
         // Use simplified mapping to avoid circular reference
         if (sessionEntity.getClassRoomEntity() != null) {

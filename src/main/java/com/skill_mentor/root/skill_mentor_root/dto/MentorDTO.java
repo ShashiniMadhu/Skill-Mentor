@@ -19,7 +19,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MentorDTO {
 
-    @JsonProperty("mentorId")
+    @JsonProperty("mentor_id")
     private Integer mentorId;
 
     @NotBlank(message = "First name must not be blank")

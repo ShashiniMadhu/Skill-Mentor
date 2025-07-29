@@ -42,6 +42,14 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     @CacheEvict(value = {"classroomCache", "allClassroomsCache"}, allEntries = true)
     public ClassRoomDTO createClassRoom(ClassRoomDTO classRoomDTO) {
         log.info("Creating new classroom...");
+
+        // Add debug logging
+        log.debug("Received ClassRoomDTO: {}", classRoomDTO);
+        log.debug("MentorDTO: {}", classRoomDTO.getMentorDTO());
+        if (classRoomDTO.getMentorDTO() != null) {
+            log.debug("Mentor ID: {}", classRoomDTO.getMentorDTO().getMentorId());
+        }
+
         try {
             if (classRoomDTO.getTitle() == null || classRoomDTO.getTitle().trim().isEmpty()) {
                 log.error("Classroom title is missing.");
@@ -49,10 +57,11 @@ public class ClassRoomServiceImpl implements ClassRoomService {
             }
 
             if (classRoomDTO.getMentorDTO() == null || classRoomDTO.getMentorDTO().getMentorId() == null) {
-                log.error("Mentor information is missing.");
+                log.error("Mentor information is missing. MentorDTO: {}", classRoomDTO.getMentorDTO());
                 throw new RuntimeException("Mentor information is required");
             }
 
+            // Rest of your existing code...
             classRoomDTO.setClassRoomId(null);
             log.debug("ClassRoomDTO received: {}", classRoomDTO);
 

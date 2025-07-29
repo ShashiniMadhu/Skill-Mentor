@@ -13,7 +13,7 @@ public class SessionEntityDTOMapper {
         SessionDTO sessionDTO = new SessionDTO();
         sessionDTO.setSessionId(sessionEntity.getSessionId());
 
-        // Use simplified mappings to avoid circular references
+        // Use simplified mappings
         if (sessionEntity.getClassRoomEntity() != null) {
             sessionDTO.setClassRoom(ClassRoomEntityDTOMapper.mapWithoutMentor(sessionEntity.getClassRoomEntity()));
         }
@@ -27,17 +27,17 @@ public class SessionEntityDTOMapper {
         }
 
         sessionDTO.setTopic(sessionEntity.getTopic());
+        sessionDTO.setDate(sessionEntity.getDate());
         sessionDTO.setStartTime(sessionEntity.getStartTime());
-        sessionDTO.setEndTime(sessionEntity.getEndTime());
+
         return sessionDTO;
     }
 
-    // Alternative mapping with full details (use carefully to avoid circular references)
+    // Full mapping - only if you're sure there won't be circular references
     public static SessionDTO mapWithFullDetails(SessionEntity sessionEntity) {
         SessionDTO sessionDTO = new SessionDTO();
         sessionDTO.setSessionId(sessionEntity.getSessionId());
 
-        // Full mapping - use only when you're sure there won't be circular references
         if (sessionEntity.getClassRoomEntity() != null) {
             sessionDTO.setClassRoom(ClassRoomEntityDTOMapper.map(sessionEntity.getClassRoomEntity()));
         }
@@ -51,11 +51,13 @@ public class SessionEntityDTOMapper {
         }
 
         sessionDTO.setTopic(sessionEntity.getTopic());
+        sessionDTO.setDate(sessionEntity.getDate());
         sessionDTO.setStartTime(sessionEntity.getStartTime());
-        sessionDTO.setEndTime(sessionEntity.getEndTime());
+
         return sessionDTO;
     }
 
+    // Entity mapping from DTO
     public static SessionEntity map(SessionDTO sessionDTO, ClassRoomEntity classRoomEntity,
                                     MentorEntity mentorEntity, StudentEntity studentEntity) {
         return new SessionEntity(
@@ -64,8 +66,8 @@ public class SessionEntityDTOMapper {
                 mentorEntity,
                 studentEntity,
                 sessionDTO.getTopic(),
-                sessionDTO.getStartTime(),
-                sessionDTO.getEndTime()
+                sessionDTO.getDate(),
+                sessionDTO.getStartTime()
         );
     }
 }

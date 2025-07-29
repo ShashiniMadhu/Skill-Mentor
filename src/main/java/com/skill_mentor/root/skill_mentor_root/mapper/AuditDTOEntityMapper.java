@@ -12,7 +12,7 @@ public class AuditDTOEntityMapper {
         AuditDTO auditDTO = new AuditDTO();
         auditDTO.setSessionId(sessionEntity.getSessionId());
         auditDTO.setStartTime(sessionEntity.getStartTime());
-        auditDTO.setEndTime(sessionEntity.getEndTime());
+        auditDTO.setDate(sessionEntity.getDate());
         auditDTO.setTopic(sessionEntity.getTopic());
 
         // Safe mapping for StudentEntity
