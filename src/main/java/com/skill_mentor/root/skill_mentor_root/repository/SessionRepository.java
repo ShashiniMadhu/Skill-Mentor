@@ -9,10 +9,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SessionRepository extends JpaRepository<SessionEntity,Integer> {
+public interface SessionRepository extends JpaRepository<SessionEntity, Integer> {
+
     // Find all sessions for a specific student
     List<SessionEntity> findByStudentEntityStudentId(Integer studentId);
 
+    // Find all sessions for a specific mentor
+    List<SessionEntity> findByMentorEntityMentorId(Integer mentorId);
+
+    // Find mentor payments with native query
     @Query(value = "SELECT m.mentor_id AS mentorId, " +
             "CONCAT(m.first_name, ' ', m.last_name) AS mentorName, " +
             "(COUNT(s.session_id) * m.session_fee) AS totalFee " +

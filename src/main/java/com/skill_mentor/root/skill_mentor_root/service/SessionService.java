@@ -49,6 +49,8 @@ public interface SessionService {
      */
     List<SessionDTO> getSessionsByStudentId(Integer studentId);
 
+    List<SessionDTO> getSessionsByMentorId(Integer mentorId);
+
     /**
      * Updates an existing session.
      *

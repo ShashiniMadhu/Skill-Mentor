@@ -241,4 +241,23 @@ public class SessionServiceImpl implements SessionService {
                 .map(SessionEntityDTOMapper::map)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<SessionDTO> getSessionsByMentorId(Integer mentorId) {
+        // Validate student exists
+        log.info("Getting all sessions for mentor ID: {}", mentorId);
+        Optional<MentorEntity> mentorEntityOpt = mentorRepository.findById(mentorId);
+        if (mentorEntityOpt.isEmpty()) {
+            log.error("Mentor not found with ID: {}", mentorId);
+            throw new RuntimeException("Mentor not found with ID: " + mentorId);
+        }
+
+        List<SessionEntity> sessionEntities = sessionRepository.findByMentorEntityMentorId(mentorId);
+        log.info("Found {} sessions for mentor ID {}", sessionEntities.size(), mentorId);
+
+        return sessionEntities.stream()
+                .map(SessionEntityDTOMapper::map)
+                .collect(Collectors.toList());
+    }
 }

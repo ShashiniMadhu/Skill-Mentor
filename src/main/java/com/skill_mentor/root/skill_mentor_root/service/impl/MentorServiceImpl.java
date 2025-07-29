@@ -46,7 +46,7 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = {"mentorCache", "allMentorsCache"}, allEntries = true)
+//    @CacheEvict(value = {"mentorCache", "allMentorsCache"}, allEntries = true)
     public MentorDTO createMentor(MentorDTO mentorDTO) throws MentorException {
         log.info("Creating mentor: {}", mentorDTO.getFirstName());
 
@@ -94,7 +94,7 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @Cacheable(value = "allMentorsCache", key = "'allMentors'")
+//    @Cacheable(value = "allMentorsCache", key = "'allMentors'")
     public List<MentorDTO> getAllMentors(String subject) {
         log.info("Fetching all mentors with subject filter: {}", subject);
         List<MentorDTO> mentors = mentorRepository.findAll().stream()
@@ -107,7 +107,7 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @Cacheable(value = "mentorCache", key = "#id")
+//    @Cacheable(value = "mentorCache", key = "#id")
     public MentorDTO findMentorById(Integer id) throws MentorException {
         log.info("Fetching mentor by ID: {}", id);
         return mentorRepository.findById(id)
@@ -121,8 +121,8 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = "allMentorsCache", allEntries = true)
-    @CachePut(value = "mentorCache", key = "#mentorDTO.mentorId")
+//    @CacheEvict(value = "allMentorsCache", allEntries = true)
+//    @CachePut(value = "mentorCache", key = "#mentorDTO.mentorId")
     public MentorDTO updateMentorById(MentorDTO mentorDTO) throws MentorException {
         log.info("Updating mentor with ID: {}", mentorDTO.getMentorId());
 
@@ -168,7 +168,7 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = {"mentorCache", "allMentorsCache"}, allEntries = true)
+//    @CacheEvict(value = {"mentorCache", "allMentorsCache"}, allEntries = true)
     public MentorDTO deleteMentorById(Integer id) throws MentorException {
         log.info("Deleting mentor with ID: {}", id);
         final MentorEntity mentorEntity = mentorRepository.findById(id)

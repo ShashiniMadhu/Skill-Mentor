@@ -15,4 +15,7 @@ public interface ClassRoomService {
     ClassRoomDTO deleteClassRoomById(Integer id);
 
     ClassRoomDTO updateClassRoom(ClassRoomDTO classRoomDTO);
+
+    ClassRoomDTO findClassRoomByMentorId(Integer mentorId);
+
 }

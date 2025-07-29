@@ -53,4 +53,13 @@ public class ClassRoomController {
         final ClassRoomDTO classroom = classroomService.deleteClassRoomById(id);
         return ResponseEntity.ok(classroom);
     }
+
+    @GetMapping(value = "/classroom/mentor/{mentorId}", produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<ClassRoomDTO> getClassroomByMentorId(
+            @PathVariable @Min(value = 1, message = "Mentor ID must be positive") Integer mentorId) {
+
+        log.info("Getting classroom for mentor ID: {}", mentorId);
+        final ClassRoomDTO classroom = classroomService.findClassRoomByMentorId(mentorId);
+        return ResponseEntity.ok(classroom);
+    }
 }

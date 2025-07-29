@@ -183,4 +183,36 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         log.info("Classroom updated with ID: {}", savedEntity.getClassRoomId());
         return ClassRoomEntityDTOMapper.map(savedEntity);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @Cacheable(value = "classroomByMentorCache", key = "#mentorId")
+    public ClassRoomDTO findClassRoomByMentorId(Integer mentorId) {
+        log.info("Fetching classroom by mentor ID: {}", mentorId);
+
+        // Validate mentor ID
+        if (mentorId == null || mentorId <= 0) {
+            log.error("Invalid mentor ID: {}", mentorId);
+            throw new IllegalArgumentException("Mentor ID must be a positive number");
+        }
+
+        // Check if mentor exists
+        if (!mentorRepository.existsById(mentorId)) {
+            log.error("Mentor not found with ID: {}", mentorId);
+            throw new RuntimeException("Mentor not found with ID: " + mentorId);
+        }
+
+        // Find classroom by mentor ID
+        Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findByMentor_MentorId(mentorId);
+
+        if (classRoomEntityOpt.isEmpty()) {
+            log.warn("No classroom found for mentor ID: {}", mentorId);
+            throw new ClassRoomException("No classroom found for mentor ID: " + mentorId);
+        }
+
+        ClassRoomEntity classRoomEntity = classRoomEntityOpt.get();
+        log.info("Classroom found for mentor ID {}: {}", mentorId, classRoomEntity.getClassRoomId());
+
+        return ClassRoomEntityDTOMapper.map(classRoomEntity);
+    }
 }
