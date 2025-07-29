@@ -2,8 +2,10 @@ package com.skill_mentor.root.skill_mentor_root.controller;
 
 import com.skill_mentor.root.skill_mentor_root.common.Constants;
 import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
+import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 import com.skill_mentor.root.skill_mentor_root.exception.MentorException;
 import com.skill_mentor.root.skill_mentor_root.service.MentorService;
+import com.skill_mentor.root.skill_mentor_root.service.SessionService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +23,19 @@ public class MentorController {
     @Autowired
     private MentorService mentorService;
 
+    @Autowired
+    private SessionService sessionService;
+
     public MentorController() {}//explicit default constructor
     //optional and can be removed if no other constructors are defined
 
     @PostMapping(value = "/mentor", consumes = Constants.APPLICATION_JSON, produces = Constants.APPLICATION_JSON)
-    public ResponseEntity<?> createMentor(@Valid @RequestBody MentorDTO mentorDTO){
+    public ResponseEntity<MentorDTO> createMentor(@Valid @RequestBody MentorDTO mentorDTO){
         try{
             final MentorDTO savedDTO = mentorService.createMentor(mentorDTO);
-            //return new ResponseEntity<>(savedDTO, HttpStatus.OK);
             return ResponseEntity.ok(savedDTO);
         }catch(MentorException mentorException){
-            return ResponseEntity.badRequest().body(mentorException.getMessage());
+            return ResponseEntity.badRequest().body(null); // Note: Consider returning error DTO instead
         }
     }
 
@@ -42,32 +46,39 @@ public class MentorController {
     }
 
     @GetMapping(value = "/mentor/{id}", produces = Constants.APPLICATION_JSON)
-    public ResponseEntity<?> findMentorById(@PathVariable @Min(value = 1, message = "Mentor ID must be a positive integer") Integer id){
+    public ResponseEntity<MentorDTO> findMentorById(@PathVariable @Min(value = 1, message = "Mentor ID must be a positive integer") Integer id){
         try{
             final MentorDTO mentor = mentorService.findMentorById(id);
             return ResponseEntity.ok(mentor);
         }catch(MentorException mentorException){
-            return ResponseEntity.badRequest().body(mentorException.getMessage());
+            return ResponseEntity.badRequest().body(null); // Note: Consider returning error DTO instead
         }
     }
 
     @PutMapping(value = "/mentor", consumes = Constants.APPLICATION_JSON, produces = Constants.APPLICATION_JSON)
-    public ResponseEntity<?> updateMentor(@Valid @RequestBody MentorDTO mentorDTO) {
+    public ResponseEntity<MentorDTO> updateMentor(@Valid @RequestBody MentorDTO mentorDTO) {
         try{
             final MentorDTO mentor = mentorService.updateMentorById(mentorDTO);
             return ResponseEntity.ok(mentor);
         }catch(MentorException mentorException){
-            return new ResponseEntity<>(mentorException.getMessage(), HttpStatus.NOT_FOUND);        }
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Note: Consider returning error DTO instead
+        }
     }
 
     @DeleteMapping(value = "/mentor/{id}", produces = Constants.APPLICATION_JSON)
-    public ResponseEntity<?> deleteMentor(@PathVariable @Min(value = 1, message = "Mentor ID must be a positive integer") Integer id){
+    public ResponseEntity<MentorDTO> deleteMentor(@PathVariable @Min(value = 1, message = "Mentor ID must be a positive integer") Integer id){
         try{
             final MentorDTO mentor = mentorService.deleteMentorById(id);
             return ResponseEntity.ok(mentor);
         }catch(MentorException mentorException){
-            return ResponseEntity.badRequest().body(mentorException.getMessage());
+            return ResponseEntity.badRequest().body(null); // Note: Consider returning error DTO instead
         }
     }
 
+    // FIXED: Changed from "/{mentorId}/sessions" to "/mentor/{mentorId}/sessions"
+    @GetMapping("/mentor/{mentorId}/sessions")
+    public ResponseEntity<List<SessionDTO>> getSessionsByMentorId(@PathVariable Integer mentorId) {
+        List<SessionDTO> sessions = sessionService.getSessionsByMentorId(mentorId);
+        return new ResponseEntity<>(sessions, HttpStatus.OK);
+    }
 }
