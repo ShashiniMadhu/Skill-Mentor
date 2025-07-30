@@ -17,6 +17,8 @@ public class LiteSessionEntityDTOMapper {
         liteSessionEntity.setTopic(liteSessionDTO.getTopic());
         liteSessionEntity.setStartTime(liteSessionDTO.getStartTime());
         liteSessionEntity.setDate(liteSessionDTO.getDate());
+        liteSessionEntity.setStatus(liteSessionDTO.getStatus());
+        liteSessionEntity.setSessionLink(liteSessionDTO.getSessionLink());
         return liteSessionEntity;
     }
 
@@ -32,6 +34,8 @@ public class LiteSessionEntityDTOMapper {
         liteSessionDTO.setTopic(liteSessionEntity.getTopic());
         liteSessionDTO.setStartTime(liteSessionEntity.getStartTime());
         liteSessionDTO.setDate(liteSessionEntity.getDate());
+        liteSessionDTO.setStatus(liteSessionEntity.getStatus());
+        liteSessionDTO.setSessionLink(liteSessionEntity.getSessionLink());
         return liteSessionDTO;
     }
 }

@@ -42,4 +42,10 @@ public class SessionDTO {
     @NotNull(message = "Start time must not be null")
     @JsonProperty("start_time")
     private LocalTime startTime;
+
+    @JsonProperty("status")
+    private String status;
+
+    @JsonProperty("session_link")
+    private String sessionLink;
 }
