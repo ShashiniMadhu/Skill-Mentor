@@ -29,6 +29,8 @@ public class SessionEntityDTOMapper {
         sessionDTO.setTopic(sessionEntity.getTopic());
         sessionDTO.setDate(sessionEntity.getDate());
         sessionDTO.setStartTime(sessionEntity.getStartTime());
+        sessionDTO.setStatus(sessionEntity.getStatus());
+        sessionDTO.setSessionLink(sessionEntity.getSessionLink());
 
         return sessionDTO;
     }
@@ -53,6 +55,8 @@ public class SessionEntityDTOMapper {
         sessionDTO.setTopic(sessionEntity.getTopic());
         sessionDTO.setDate(sessionEntity.getDate());
         sessionDTO.setStartTime(sessionEntity.getStartTime());
+        sessionDTO.setStatus(sessionEntity.getStatus());
+        sessionDTO.setSessionLink(sessionEntity.getSessionLink());
 
         return sessionDTO;
     }
@@ -67,7 +71,9 @@ public class SessionEntityDTOMapper {
                 studentEntity,
                 sessionDTO.getTopic(),
                 sessionDTO.getDate(),
-                sessionDTO.getStartTime()
+                sessionDTO.getStartTime(),
+                sessionDTO.getStatus(),
+                sessionDTO.getSessionLink()
         );
     }
 }

@@ -52,4 +52,9 @@ public class LiteSessionEntity {
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "session_link")
+    private String sessionLink;
 }

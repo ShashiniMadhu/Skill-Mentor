@@ -66,4 +66,7 @@ public interface SessionService {
      * @return the deleted session DTO
      */
     SessionDTO deleteSessionById(Integer id);
+
+    SessionDTO updateSessionStatusAndLink(Integer sessionId, String status, String sessionLink);
+
 }

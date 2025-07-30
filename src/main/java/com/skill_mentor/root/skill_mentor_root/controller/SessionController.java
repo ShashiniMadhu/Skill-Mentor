@@ -10,11 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -74,6 +76,20 @@ public class SessionController {
     public ResponseEntity<SessionDTO> deleteSession(@PathVariable Integer id) {
         SessionDTO session = sessionService.deleteSessionById(id);
         return new ResponseEntity<>(session, HttpStatus.OK);
+    }
+
+    @PatchMapping("/session/{sessionId}/status")
+    public ResponseEntity<SessionDTO> updateSessionStatus(
+            @PathVariable Integer sessionId,
+            @RequestParam String status,
+            @RequestParam(required = false) String sessionLink) {
+
+        try {
+            SessionDTO updatedSession = sessionService.updateSessionStatusAndLink(sessionId, status, sessionLink);
+            return new ResponseEntity<>(updatedSession, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 }

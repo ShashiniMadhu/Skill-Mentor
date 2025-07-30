@@ -132,6 +132,9 @@ public class SessionServiceImpl implements SessionService {
         // Update basic fields
         sessionEntity.setDate(sessionDTO.getDate());
         sessionEntity.setStartTime(sessionDTO.getStartTime());
+        sessionEntity.setStatus(sessionDTO.getStatus());
+        sessionEntity.setSessionLink(sessionDTO.getSessionLink());
+
 
         // Update classroom if provided
         if (sessionDTO.getClassRoom() != null && sessionDTO.getClassRoom().getClassRoomId() != null) {
@@ -259,5 +262,94 @@ public class SessionServiceImpl implements SessionService {
         return sessionEntities.stream()
                 .map(SessionEntityDTOMapper::map)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = {"sessionCache", "allSessionsCache"}, allEntries = true)
+    @CachePut(value = "sessionCache", key = "#sessionId")
+    public SessionDTO updateSessionStatusAndLink(Integer sessionId, String status, String sessionLink) {
+        log.info("Updating session status and link for ID: {} to status: {} with link: {}", sessionId, status, sessionLink);
+
+        // Validate status
+        if (status == null || status.trim().isEmpty()) {
+            log.error("Status cannot be null or empty");
+            throw new IllegalArgumentException("Status cannot be null or empty");
+        }
+
+        // Validate allowed status values
+        String normalizedStatus = status.trim().toLowerCase();
+        if (!isValidStatus(normalizedStatus)) {
+            log.error("Invalid status: {}. Allowed values are: accept, accepted, reject, rejected, pending", status);
+            throw new IllegalArgumentException("Invalid status. Allowed values are: accept, accepted, reject, rejected, pending");
+        }
+
+        // Validate session link if provided
+        if (sessionLink != null && !sessionLink.trim().isEmpty() && !isValidUrl(sessionLink.trim())) {
+            log.error("Invalid session link format: {}", sessionLink);
+            throw new IllegalArgumentException("Invalid session link format. Must be a valid URL.");
+        }
+
+        // Find the session
+        Optional<SessionEntity> optionalSessionEntity = sessionRepository.findById(sessionId);
+        if (optionalSessionEntity.isEmpty()) {
+            log.error("Session not found with ID: {}", sessionId);
+            throw new RuntimeException("Session not found with ID: " + sessionId);
+        }
+
+        SessionEntity sessionEntity = optionalSessionEntity.get();
+
+        // Update status
+        String finalStatus = mapStatusToFinalValue(normalizedStatus);
+        sessionEntity.setStatus(finalStatus);
+
+        // Update session link if provided
+        if (sessionLink != null) {
+            String trimmedLink = sessionLink.trim();
+            sessionEntity.setSessionLink(trimmedLink.isEmpty() ? null : trimmedLink);
+            log.info("Session link updated for ID: {} to: {}", sessionId, trimmedLink);
+        }
+
+        // Save the updated entity
+        SessionEntity updatedSession = sessionRepository.save(sessionEntity);
+        log.info("Session status and link updated successfully for ID: {} to status: {}", sessionId, finalStatus);
+
+        return SessionEntityDTOMapper.map(updatedSession);
+    }
+
+    private boolean isValidStatus(String status) {
+        return status.equals("accept") ||
+                status.equals("accepted") ||
+                status.equals("reject") ||
+                status.equals("rejected") ||
+                status.equals("pending");
+    }
+
+    private String mapStatusToFinalValue(String status) {
+        switch (status) {
+            case "accept":
+                return "accepted";
+            case "reject":
+                return "rejected";
+            case "accepted":
+            case "rejected":
+            case "pending":
+                return status;
+            default:
+                return "pending"; // fallback
+        }
+    }
+
+    private boolean isValidUrl(String url) {
+        try {
+            // Basic URL validation
+            if (url.startsWith("http://") || url.startsWith("https://")) {
+                new java.net.URL(url);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
