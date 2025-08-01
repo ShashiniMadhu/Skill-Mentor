@@ -19,6 +19,7 @@ public class LiteSessionEntityDTOMapper {
         liteSessionEntity.setDate(liteSessionDTO.getDate());
         liteSessionEntity.setStatus(liteSessionDTO.getStatus());
         liteSessionEntity.setSessionLink(liteSessionDTO.getSessionLink());
+        liteSessionEntity.setSlipLink(liteSessionDTO.getSlipLink());
         return liteSessionEntity;
     }
 
@@ -36,6 +37,7 @@ public class LiteSessionEntityDTOMapper {
         liteSessionDTO.setDate(liteSessionEntity.getDate());
         liteSessionDTO.setStatus(liteSessionEntity.getStatus());
         liteSessionDTO.setSessionLink(liteSessionEntity.getSessionLink());
+        liteSessionDTO.setSlipLink(liteSessionEntity.getSlipLink());
         return liteSessionDTO;
     }
 }

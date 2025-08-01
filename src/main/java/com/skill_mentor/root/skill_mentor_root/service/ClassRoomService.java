@@ -16,6 +16,6 @@ public interface ClassRoomService {
 
     ClassRoomDTO updateClassRoom(ClassRoomDTO classRoomDTO);
 
-    ClassRoomDTO findClassRoomByMentorId(Integer mentorId);
+    List<ClassRoomDTO> findClassRoomsByMentorId(Integer mentorId);
 
 }

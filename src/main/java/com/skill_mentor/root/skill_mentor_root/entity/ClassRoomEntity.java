@@ -31,8 +31,8 @@ public class ClassRoomEntity {
     @Column(name = "enrolled_student_count", nullable = false)
     private Integer enrolledStudentCount;
 
-    // One-to-One relationship with Mentor
-    @OneToOne(fetch = FetchType.EAGER)
+    //Many-to-One
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "mentor_id", referencedColumnName = "mentor_id")
     private MentorEntity mentor;
 

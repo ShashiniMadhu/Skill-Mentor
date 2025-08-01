@@ -48,4 +48,7 @@ public class SessionDTO {
 
     @JsonProperty("session_link")
     private String sessionLink;
+
+    @JsonProperty("slip_link")
+    private String slipLink;
 }

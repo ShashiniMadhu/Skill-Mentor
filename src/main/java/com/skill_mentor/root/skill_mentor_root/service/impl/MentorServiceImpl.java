@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -46,27 +47,29 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-//    @CacheEvict(value = {"mentorCache", "allMentorsCache"}, allEntries = true)
     public MentorDTO createMentor(MentorDTO mentorDTO) throws MentorException {
         log.info("Creating mentor: {}", mentorDTO.getFirstName());
 
         // HASH PASSWORD BEFORE SAVING
         if (StringUtils.hasText(mentorDTO.getPassword())) {
             String hashedPassword = passwordEncoder.encode(mentorDTO.getPassword());
-            mentorDTO.setPassword(hashedPassword); // <--- HERE IS THE PROBLEM
+            mentorDTO.setPassword(hashedPassword);
             log.debug("Password hashed for mentor: {}", mentorDTO.getFirstName());
         }
 
-        if (mentorDTO.getClassRoomId() != null) {
-            ClassRoomEntity classRoom = classRoomRepository.findById(mentorDTO.getClassRoomId())
-                    .orElseThrow(() -> {
-                        log.error("ClassRoom not found with ID: {} at datasource:{}", mentorDTO.getClassRoomId(),this.datasource);
-                        return new MentorException("ClassRoom not found with ID?: at datasource:{}" + mentorDTO.getClassRoomId() + this.datasource);
-                    });
+        // CHANGED: Validate classroom IDs if provided
+        if (mentorDTO.getClassRoomIds() != null && !mentorDTO.getClassRoomIds().isEmpty()) {
+            for (Integer classRoomId : mentorDTO.getClassRoomIds()) {
+                ClassRoomEntity classRoom = classRoomRepository.findById(classRoomId)
+                        .orElseThrow(() -> {
+                            log.error("ClassRoom not found with ID: {} at datasource:{}", classRoomId, this.datasource);
+                            return new MentorException("ClassRoom not found with ID: " + classRoomId);
+                        });
 
-            if (classRoom.getMentor() != null) {
-                log.error("ClassRoom ID {} already has a mentor assigned", mentorDTO.getClassRoomId());
-                throw new RuntimeException("ClassRoom with ID " + mentorDTO.getClassRoomId() + " already has a mentor assigned");
+                if (classRoom.getMentor() != null) {
+                    log.error("ClassRoom ID {} already has a mentor assigned", classRoomId);
+                    throw new RuntimeException("ClassRoom with ID " + classRoomId + " already has a mentor assigned");
+                }
             }
         }
 
@@ -74,16 +77,20 @@ public class MentorServiceImpl implements MentorService {
         MentorEntity savedMentor = mentorRepository.save(mentorEntity);
         log.debug("Mentor saved: {}", savedMentor.getMentorId());
 
-        if (mentorDTO.getClassRoomId() != null) {
-            ClassRoomEntity classRoom = classRoomRepository.findById(mentorDTO.getClassRoomId())
-                    .orElseThrow(() -> new MentorException("ClassRoom not found with ID?: " + mentorDTO.getClassRoomId()));
+        // CHANGED: Assign multiple classrooms to mentor
+        if (mentorDTO.getClassRoomIds() != null && !mentorDTO.getClassRoomIds().isEmpty()) {
+            List<ClassRoomEntity> classRooms = new ArrayList<>();
+            for (Integer classRoomId : mentorDTO.getClassRoomIds()) {
+                ClassRoomEntity classRoom = classRoomRepository.findById(classRoomId)
+                        .orElseThrow(() -> new MentorException("ClassRoom not found with ID: " + classRoomId));
 
-            classRoom.setMentor(savedMentor);
-            savedMentor.setClassRoom(classRoom);
-
-            classRoomRepository.save(classRoom);
+                classRoom.setMentor(savedMentor);
+                classRoomRepository.save(classRoom);
+                classRooms.add(classRoom);
+            }
+            savedMentor.setClassRooms(classRooms);
             savedMentor = mentorRepository.save(savedMentor);
-            log.info("Mentor assigned to classroom ID {}", mentorDTO.getClassRoomId());
+            log.info("Mentor assigned to {} classrooms", classRooms.size());
         }
 
         // Don't return the hashed password in response
@@ -121,8 +128,8 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-//    @CacheEvict(value = "allMentorsCache", allEntries = true)
-//    @CachePut(value = "mentorCache", key = "#mentorDTO.mentorId")
+// @CacheEvict(value = "allMentorsCache", allEntries = true)
+// @CachePut(value = "mentorCache", key = "#mentorDTO.mentorId")
     public MentorDTO updateMentorById(MentorDTO mentorDTO) throws MentorException {
         log.info("Updating mentor with ID: {}", mentorDTO.getMentorId());
 
@@ -132,6 +139,7 @@ public class MentorServiceImpl implements MentorService {
                     return new MentorException("Cannot update. Mentor not found with ID: " + mentorDTO.getMentorId());
                 });
 
+        // Update basic fields
         mentorEntity.setFirstName(mentorDTO.getFirstName());
         mentorEntity.setLastName(mentorDTO.getLastName());
         mentorEntity.setAddress(mentorDTO.getAddress());
@@ -142,7 +150,6 @@ public class MentorServiceImpl implements MentorService {
         mentorEntity.setQualification(mentorDTO.getQualification());
         mentorEntity.setPhoneNumber(mentorDTO.getPhoneNumber());
         mentorEntity.setSessionFee(mentorDTO.getSessionFee());
-        mentorEntity.setPassword(mentorDTO.getPassword());
         mentorEntity.setRole(mentorDTO.getRole());
         mentorEntity.setBio(mentorDTO.getBio());
 
@@ -153,9 +160,37 @@ public class MentorServiceImpl implements MentorService {
             log.debug("Password updated and hashed for mentor: {}", mentorDTO.getMentorId());
         }
 
-        mentorEntity.setRole(mentorDTO.getRole());
+        // FIXED: Handle multiple classroom assignments
+        if (mentorDTO.getClassRoomIds() != null) {
+            // First, remove mentor from current classrooms
+            if (mentorEntity.getClassRooms() != null && !mentorEntity.getClassRooms().isEmpty()) {
+                List<ClassRoomEntity> currentClassRooms = new ArrayList<>(mentorEntity.getClassRooms());
+                for (ClassRoomEntity currentClassRoom : currentClassRooms) {
+                    currentClassRoom.setMentor(null);
+                    classRoomRepository.save(currentClassRoom);
+                }
+                mentorEntity.getClassRooms().clear();
+            }
 
-        // ... rest of your classroom logic remains the same ...
+            // Then, assign new classrooms
+            if (!mentorDTO.getClassRoomIds().isEmpty()) {
+                List<ClassRoomEntity> newClassRooms = new ArrayList<>();
+                for (Integer classRoomId : mentorDTO.getClassRoomIds()) {
+                    ClassRoomEntity classRoom = classRoomRepository.findById(classRoomId)
+                            .orElseThrow(() -> new MentorException("ClassRoom not found with ID: " + classRoomId));
+
+                    // Check if classroom is already assigned to another mentor
+                    if (classRoom.getMentor() != null && !classRoom.getMentor().getMentorId().equals(mentorDTO.getMentorId())) {
+                        throw new RuntimeException("ClassRoom with ID " + classRoomId + " is already assigned to another mentor");
+                    }
+
+                    classRoom.setMentor(mentorEntity);
+                    newClassRooms.add(classRoom);
+                    classRoomRepository.save(classRoom);
+                }
+                mentorEntity.setClassRooms(newClassRooms);
+            }
+        }
 
         MentorEntity updatedEntity = mentorRepository.save(mentorEntity);
         log.info("Mentor with ID {} updated successfully", updatedEntity.getMentorId());
@@ -168,7 +203,7 @@ public class MentorServiceImpl implements MentorService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-//    @CacheEvict(value = {"mentorCache", "allMentorsCache"}, allEntries = true)
+// @CacheEvict(value = {"mentorCache", "allMentorsCache"}, allEntries = true)
     public MentorDTO deleteMentorById(Integer id) throws MentorException {
         log.info("Deleting mentor with ID: {}", id);
         final MentorEntity mentorEntity = mentorRepository.findById(id)
@@ -177,14 +212,24 @@ public class MentorServiceImpl implements MentorService {
                     return new MentorException("Cannot delete. Mentor not found with ID: " + id);
                 });
 
-        if (mentorEntity.getClassRoom() != null) {
-            ClassRoomEntity classRoom = mentorEntity.getClassRoom();
-            classRoom.setMentor(null);
-            classRoomRepository.save(classRoom);
-            log.debug("Mentor removed from classroom ID {}", classRoom.getClassRoomId());
+        // FIXED: Handle multiple classrooms (List<ClassRoomEntity>)
+        if (mentorEntity.getClassRooms() != null && !mentorEntity.getClassRooms().isEmpty()) {
+            log.debug("Removing mentor from {} classrooms", mentorEntity.getClassRooms().size());
+
+            // Iterate through all classrooms and set mentor to null
+            for (ClassRoomEntity classRoom : mentorEntity.getClassRooms()) {
+                classRoom.setMentor(null);
+                classRoomRepository.save(classRoom);
+                log.debug("Mentor removed from classroom ID {}", classRoom.getClassRoomId());
+            }
+
+            // Clear the mentor's classroom list
+            mentorEntity.getClassRooms().clear();
         }
 
+        // Handle sessions - this part remains the same
         if (mentorEntity.getSessions() != null && !mentorEntity.getSessions().isEmpty()) {
+            log.debug("Removing mentor from {} sessions", mentorEntity.getSessions().size());
             for (SessionEntity session : mentorEntity.getSessions()) {
                 session.setMentorEntity(null);
                 sessionRepository.save(session);
@@ -192,8 +237,13 @@ public class MentorServiceImpl implements MentorService {
             log.debug("Mentor removed from all associated sessions");
         }
 
+        // Create the response DTO before deletion
+        MentorDTO responseDTO = MentorEntityDTOMapper.map(mentorEntity);
+
+        // Now delete the mentor
         mentorRepository.deleteById(id);
         log.info("Mentor with ID {} deleted successfully", id);
-        return MentorEntityDTOMapper.map(mentorEntity);
+
+        return responseDTO;
     }
 }

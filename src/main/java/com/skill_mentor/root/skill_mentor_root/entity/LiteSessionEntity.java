@@ -57,4 +57,7 @@ public class LiteSessionEntity {
 
     @Column(name = "session_link")
     private String sessionLink;
+
+    @Column(name = "slip_link")
+    private String slipLink;
 }

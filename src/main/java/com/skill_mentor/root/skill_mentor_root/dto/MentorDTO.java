@@ -64,12 +64,15 @@ public class MentorDTO {
     @JsonProperty("session_fee")
     private Double sessionFee;
 
-//    @NotNull(message = "Classroom ID must not be null")
-    @JsonProperty("class_room_id")
-    private Integer classRoomId;
+    // List of classroom IDs for easy reference
+    @JsonProperty("class_room_ids")
+    private List<Integer> classRoomIds;
+
+    // FULL classroom details - this is what you wanted to see
+    @JsonProperty("classrooms")
+    private List<ClassRoomDTO> classRooms;
 
     // List of sessions conducted by this mentor
-//    @NotNull
     @JsonProperty("sessions")
     private List<SessionDTO> sessionDTOs;
 
