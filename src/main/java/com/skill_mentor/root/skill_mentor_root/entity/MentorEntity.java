@@ -66,10 +66,10 @@ public class MentorEntity {
     @Column(name = "session_fee", nullable = false)
     private Double sessionFee;
 
-    // One-to-One relationship with ClassRoom (mapped by mentor in ClassRoomEntity)
-    @OneToOne(mappedBy = "mentor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // One-to-Many relationship with ClassRoom (mapped by mentor in ClassRoomEntity)
+    @OneToMany(mappedBy = "mentor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private ClassRoomEntity classRoom;
+    private List<ClassRoomEntity> classRooms;
 
     // One-to-Many relationship with Sessions
     @OneToMany(mappedBy = "mentorEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

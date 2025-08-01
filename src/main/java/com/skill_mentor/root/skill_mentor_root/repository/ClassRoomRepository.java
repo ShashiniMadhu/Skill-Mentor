@@ -15,5 +15,8 @@ import java.util.Optional;
 
 @Repository
 public interface ClassRoomRepository extends JpaRepository<ClassRoomEntity, Integer> {
-    Optional<ClassRoomEntity> findByMentor_MentorId(Integer mentorId);
+    List<ClassRoomEntity> findByMentor_MentorId(Integer mentorId);
+
+    boolean existsByTitle(String title);
+
 }

@@ -1,7 +1,9 @@
 package com.skill_mentor.root.skill_mentor_root.mapper;
 
+import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
+import com.skill_mentor.root.skill_mentor_root.entity.ClassRoomEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.MentorEntity;
 import com.skill_mentor.root.skill_mentor_root.entity.SessionEntity;
 import java.util.List;
@@ -27,9 +29,19 @@ public class MentorEntityDTOMapper {
         mentorDTO.setRole(mentorEntity.getRole());
         mentorDTO.setBio(mentorEntity.getBio());
 
-        // If you need classRoomId in your DTO, get it from the relationship
-        if (mentorEntity.getClassRoom() != null) {
-            mentorDTO.setClassRoomId(mentorEntity.getClassRoom().getClassRoomId());
+        // UPDATED: Map multiple classrooms with FULL DETAILS
+        if (mentorEntity.getClassRooms() != null && !mentorEntity.getClassRooms().isEmpty()) {
+            // Set classroom IDs
+            List<Integer> classRoomIds = mentorEntity.getClassRooms().stream()
+                    .map(ClassRoomEntity::getClassRoomId)
+                    .collect(Collectors.toList());
+            mentorDTO.setClassRoomIds(classRoomIds);
+
+            // Set FULL classroom details using mapWithoutMentor to avoid circular reference
+            List<ClassRoomDTO> classRoomDTOs = mentorEntity.getClassRooms().stream()
+                    .map(ClassRoomEntityDTOMapper::mapWithoutMentor)
+                    .collect(Collectors.toList());
+            mentorDTO.setClassRooms(classRoomDTOs);
         }
 
         // Map sessions - avoid circular reference by creating simplified SessionDTOs
@@ -57,14 +69,16 @@ public class MentorEntityDTOMapper {
         mentorDTO.setPhoneNumber(mentorEntity.getPhoneNumber());
         mentorDTO.setQualification(mentorEntity.getQualification());
         mentorDTO.setSessionFee(mentorEntity.getSessionFee());
-        mentorDTO.setSessionFee(mentorEntity.getSessionFee());
         mentorDTO.setPassword(mentorEntity.getPassword());
         mentorDTO.setRole(mentorEntity.getRole());
         mentorDTO.setBio(mentorEntity.getBio());
 
-        // Only set classRoomId, don't map the full classroom object
-        if (mentorEntity.getClassRoom() != null) {
-            mentorDTO.setClassRoomId(mentorEntity.getClassRoom().getClassRoomId());
+        // Only set classRoomIds, don't map the full classroom objects to avoid circular reference
+        if (mentorEntity.getClassRooms() != null && !mentorEntity.getClassRooms().isEmpty()) {
+            List<Integer> classRoomIds = mentorEntity.getClassRooms().stream()
+                    .map(ClassRoomEntity::getClassRoomId)
+                    .collect(Collectors.toList());
+            mentorDTO.setClassRoomIds(classRoomIds);
         }
 
         // Don't map sessions to keep it simple
@@ -109,4 +123,4 @@ public class MentorEntityDTOMapper {
 
         return sessionDTO;
     }
-} 
+}

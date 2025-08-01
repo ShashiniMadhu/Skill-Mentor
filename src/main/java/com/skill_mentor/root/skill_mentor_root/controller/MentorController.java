@@ -1,9 +1,11 @@
 package com.skill_mentor.root.skill_mentor_root.controller;
 
 import com.skill_mentor.root.skill_mentor_root.common.Constants;
+import com.skill_mentor.root.skill_mentor_root.dto.ClassRoomDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.MentorDTO;
 import com.skill_mentor.root.skill_mentor_root.dto.SessionDTO;
 import com.skill_mentor.root.skill_mentor_root.exception.MentorException;
+import com.skill_mentor.root.skill_mentor_root.service.ClassRoomService;
 import com.skill_mentor.root.skill_mentor_root.service.MentorService;
 import com.skill_mentor.root.skill_mentor_root.service.SessionService;
 import jakarta.validation.Valid;
@@ -25,6 +27,9 @@ public class MentorController {
 
     @Autowired
     private SessionService sessionService;
+
+    @Autowired
+    private ClassRoomService classRoomService;
 
     public MentorController() {}//explicit default constructor
     //optional and can be removed if no other constructors are defined
@@ -80,5 +85,22 @@ public class MentorController {
     public ResponseEntity<List<SessionDTO>> getSessionsByMentorId(@PathVariable Integer mentorId) {
         List<SessionDTO> sessions = sessionService.getSessionsByMentorId(mentorId);
         return new ResponseEntity<>(sessions, HttpStatus.OK);
+    }
+
+    @GetMapping("/mentor/{mentorId}/classrooms")
+    public ResponseEntity<List<ClassRoomDTO>> getClassRoomsByMentorId(@PathVariable Integer mentorId) {
+        List<ClassRoomDTO> classrooms = classRoomService.findClassRoomsByMentorId(mentorId);
+        return new ResponseEntity<>(classrooms, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/mentor/{id}/with-classrooms", produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<MentorDTO> findMentorByIdWithClassrooms(@PathVariable @Min(value = 1, message = "Mentor ID must be a positive integer") Integer id){
+        try{
+            final MentorDTO mentor = mentorService.findMentorById(id);
+            // The mentor already includes full classroom details from the mapper
+            return ResponseEntity.ok(mentor);
+        }catch(MentorException mentorException){
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 }

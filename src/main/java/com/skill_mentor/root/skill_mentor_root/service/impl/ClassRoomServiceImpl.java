@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -61,7 +62,24 @@ public class ClassRoomServiceImpl implements ClassRoomService {
                 throw new RuntimeException("Mentor information is required");
             }
 
-            // Rest of your existing code...
+            // NEW: Check if title already exists
+            boolean titleExists = classRoomRepository.existsByTitle(classRoomDTO.getTitle().trim());
+            if (titleExists) {
+                log.error("Classroom with title '{}' already exists", classRoomDTO.getTitle());
+                throw new RuntimeException("Classroom with title '" + classRoomDTO.getTitle() + "' already exists");
+            }
+
+            // Alternative: Check if title exists for the specific mentor
+            // boolean titleExistsForMentor = classRoomRepository.existsByTitleAndMentor_MentorId(
+            //     classRoomDTO.getTitle().trim(),
+            //     classRoomDTO.getMentorDTO().getMentorId()
+            // );
+            // if (titleExistsForMentor) {
+            //     log.error("Mentor {} already has a classroom with title '{}'",
+            //         classRoomDTO.getMentorDTO().getMentorId(), classRoomDTO.getTitle());
+            //     throw new RuntimeException("You already have a classroom with this title");
+            // }
+
             classRoomDTO.setClassRoomId(null);
             log.debug("ClassRoomDTO received: {}", classRoomDTO);
 
@@ -70,11 +88,6 @@ public class ClassRoomServiceImpl implements ClassRoomService {
                         log.error("Mentor not found with ID: {}", classRoomDTO.getMentorDTO().getMentorId());
                         return new RuntimeException("Mentor not found with ID: " + classRoomDTO.getMentorDTO().getMentorId());
                     });
-
-            if (mentorEntity.getClassRoom() != null) {
-                log.error("Mentor with ID {} already has a classroom assigned", mentorEntity.getMentorId());
-                throw new RuntimeException("Mentor with ID " + mentorEntity.getMentorId() + " already has a classroom assigned");
-            }
 
             final ClassRoomEntity classRoomEntity = ClassRoomEntityDTOMapper.map(classRoomDTO);
             classRoomEntity.setMentor(mentorEntity);
@@ -85,7 +98,7 @@ public class ClassRoomServiceImpl implements ClassRoomService {
             }
 
             final ClassRoomEntity savedEntity = classRoomRepository.save(classRoomEntity);
-            log.info("Classroom created with ID: {} at datasource:{}", savedEntity.getClassRoomId(),this.datasource);
+            log.info("Classroom created with ID: {} at datasource:{}", savedEntity.getClassRoomId(), this.datasource);
             return ClassRoomEntityDTOMapper.map(savedEntity);
 
         } catch (Exception e) {
@@ -127,30 +140,43 @@ public class ClassRoomServiceImpl implements ClassRoomService {
         log.info("Deleting classroom with ID: {}", id);
         final ClassRoomEntity classRoomEntity = classRoomRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.error("ClassRoom not found with ID: {} from datasource:{}",this.datasource, id);
+                    log.error("ClassRoom not found with ID: {} from datasource:{}", id, this.datasource);
                     return new ClassRoomException("ClassRoom not found with ID: " + id);
                 });
 
+        // FIXED: Handle the Many-to-One relationship properly
         if (classRoomEntity.getMentor() != null) {
-            log.debug("Detaching mentor from classroom before deletion...");
+            log.debug("Removing classroom from mentor before deletion...");
             MentorEntity mentor = classRoomEntity.getMentor();
-            mentor.setClassRoom(null);
-            mentorRepository.save(mentor);
+
+            // Remove this classroom from the mentor's classroom list
+            if (mentor.getClassRooms() != null) {
+                mentor.getClassRooms().remove(classRoomEntity);
+                mentorRepository.save(mentor);
+            }
+
+            // Set mentor to null in classroom
             classRoomEntity.setMentor(null);
         }
 
+        // Handle sessions - this part remains the same
         if (classRoomEntity.getSessions() != null && !classRoomEntity.getSessions().isEmpty()) {
             log.debug("Detaching {} sessions from classroom before deletion...", classRoomEntity.getSessions().size());
-            List<SessionEntity> sessions = classRoomEntity.getSessions();
+            List<SessionEntity> sessions = new ArrayList<>(classRoomEntity.getSessions()); // Create copy to avoid ConcurrentModificationException
             for (SessionEntity session : sessions) {
                 session.setClassRoomEntity(null);
                 sessionRepository.save(session);
             }
+            classRoomEntity.getSessions().clear();
         }
+
+        // Create response DTO before deletion
+        ClassRoomDTO responseDTO = ClassRoomEntityDTOMapper.map(classRoomEntity);
 
         classRoomRepository.deleteById(id);
         log.info("Classroom with ID {} deleted successfully", id);
-        return ClassRoomEntityDTOMapper.map(classRoomEntity);
+
+        return responseDTO;
     }
 
     @Override
@@ -187,8 +213,8 @@ public class ClassRoomServiceImpl implements ClassRoomService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @Cacheable(value = "classroomByMentorCache", key = "#mentorId")
-    public ClassRoomDTO findClassRoomByMentorId(Integer mentorId) {
-        log.info("Fetching classroom by mentor ID: {}", mentorId);
+    public List<ClassRoomDTO> findClassRoomsByMentorId(Integer mentorId) {
+        log.info("Fetching classrooms by mentor ID: {}", mentorId);
 
         // Validate mentor ID
         if (mentorId == null || mentorId <= 0) {
@@ -202,17 +228,19 @@ public class ClassRoomServiceImpl implements ClassRoomService {
             throw new RuntimeException("Mentor not found with ID: " + mentorId);
         }
 
-        // Find classroom by mentor ID
-        Optional<ClassRoomEntity> classRoomEntityOpt = classRoomRepository.findByMentor_MentorId(mentorId);
+        // CHANGED: Find all classrooms by mentor ID
+        List<ClassRoomEntity> classRoomEntities = classRoomRepository.findByMentor_MentorId(mentorId);
 
-        if (classRoomEntityOpt.isEmpty()) {
-            log.warn("No classroom found for mentor ID: {}", mentorId);
-            throw new ClassRoomException("No classroom found for mentor ID: " + mentorId);
+        if (classRoomEntities.isEmpty()) {
+            log.warn("No classrooms found for mentor ID: {}", mentorId);
+            return new ArrayList<>();
         }
 
-        ClassRoomEntity classRoomEntity = classRoomEntityOpt.get();
-        log.info("Classroom found for mentor ID {}: {}", mentorId, classRoomEntity.getClassRoomId());
+        log.info("Found {} classrooms for mentor ID: {}", classRoomEntities.size(), mentorId);
 
-        return ClassRoomEntityDTOMapper.map(classRoomEntity);
+        return classRoomEntities.stream()
+                .map(ClassRoomEntityDTOMapper::map)
+                .collect(Collectors.toList());
     }
+
 }
