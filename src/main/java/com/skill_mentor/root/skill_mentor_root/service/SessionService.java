@@ -69,4 +69,6 @@ public interface SessionService {
 
     SessionDTO updateSessionStatusAndLink(Integer sessionId, String status, String sessionLink);
 
+    SessionDTO updateSessionSlipLink(Integer sessionId, String slipLink);
+
 }

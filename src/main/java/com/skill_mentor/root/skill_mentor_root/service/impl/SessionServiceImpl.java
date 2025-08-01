@@ -353,4 +353,40 @@ public class SessionServiceImpl implements SessionService {
             return false;
         }
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = {"sessionCache", "allSessionsCache"}, allEntries = true)
+    @CachePut(value = "sessionCache", key = "#sessionId")
+    public SessionDTO updateSessionSlipLink(Integer sessionId, String slipLink) {
+        log.info("Updating slip link for session ID: {} to: {}", sessionId, slipLink);
+
+        // Validate slip link if provided
+        if (slipLink != null && !slipLink.trim().isEmpty() && !isValidUrl(slipLink.trim())) {
+            log.error("Invalid slip link format: {}", slipLink);
+            throw new IllegalArgumentException("Invalid slip link format. Must be a valid URL.");
+        }
+
+        Optional<SessionEntity> optionalSessionEntity = sessionRepository.findById(sessionId);
+        if (optionalSessionEntity.isEmpty()) {
+            log.error("Session not found with ID: {}", sessionId);
+            throw new RuntimeException("Session not found with ID: " + sessionId);
+        }
+
+        SessionEntity sessionEntity = optionalSessionEntity.get();
+
+        // Update slip link and potentially status
+        if (slipLink != null) {
+            String trimmedLink = slipLink.trim();
+            sessionEntity.setSlipLink(trimmedLink.isEmpty() ? null : trimmedLink);
+            // Optionally update status to indicate payment slip uploaded
+            sessionEntity.setStatus("payment_uploaded");
+            log.info("Slip link updated for ID: {} to: {}", sessionId, trimmedLink);
+        }
+
+        SessionEntity updatedSession = sessionRepository.save(sessionEntity);
+        log.info("Slip link updated successfully for ID: {}", sessionId);
+
+        return SessionEntityDTOMapper.map(updatedSession);
+    }
 }
