@@ -134,6 +134,7 @@ public class SessionServiceImpl implements SessionService {
         sessionEntity.setStartTime(sessionDTO.getStartTime());
         sessionEntity.setStatus(sessionDTO.getStatus());
         sessionEntity.setSessionLink(sessionDTO.getSessionLink());
+        sessionEntity.setSlipLink(sessionDTO.getSlipLink());
 
 
         // Update classroom if provided

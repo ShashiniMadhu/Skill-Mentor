@@ -31,6 +31,7 @@ public class SessionEntityDTOMapper {
         sessionDTO.setStartTime(sessionEntity.getStartTime());
         sessionDTO.setStatus(sessionEntity.getStatus());
         sessionDTO.setSessionLink(sessionEntity.getSessionLink());
+        sessionDTO.setSlipLink(sessionEntity.getSlipLink());
 
         return sessionDTO;
     }
@@ -57,6 +58,7 @@ public class SessionEntityDTOMapper {
         sessionDTO.setStartTime(sessionEntity.getStartTime());
         sessionDTO.setStatus(sessionEntity.getStatus());
         sessionDTO.setSessionLink(sessionEntity.getSessionLink());
+        sessionDTO.setSlipLink(sessionEntity.getSlipLink());
 
         return sessionDTO;
     }
@@ -73,7 +75,8 @@ public class SessionEntityDTOMapper {
                 sessionDTO.getDate(),
                 sessionDTO.getStartTime(),
                 sessionDTO.getStatus(),
-                sessionDTO.getSessionLink()
+                sessionDTO.getSessionLink(),
+                sessionDTO.getSlipLink()
         );
     }
 }
