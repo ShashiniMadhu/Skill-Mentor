@@ -9,9 +9,6 @@ import com.skill_mentor.root.skill_mentor_root.service.StudentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,6 +113,7 @@ public class StudentServiceImpl implements StudentService {
         studentEntity.setPhoneNumber(studentDTO.getPhoneNumber());
         studentEntity.setAddress(studentDTO.getAddress());
         studentEntity.setAge(studentDTO.getAge());
+        studentEntity.setClerkUserId(studentDTO.getClerkUserId());
 
         // HASH PASSWORD ONLY IF IT'S PROVIDED AND NOT EMPTY
         if (StringUtils.hasText(studentDTO.getPassword())) {
@@ -149,5 +147,38 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.delete(studentEntity);
         log.info("Student with ID {} deleted successfully", id);
         return StudentEntityDTOMapper.map(studentEntity);
+    }
+
+    // Add these methods to StudentServiceImpl.java
+
+    @Override
+    public StudentDTO linkClerkUser(String email, String clerkUserId) {
+        log.info("Linking Clerk user {} with email {}", clerkUserId, email);
+
+        StudentEntity student = studentRepository.findByEmail(email)
+                .orElseThrow(() -> new StudentException("Student not found with email: " + email));
+
+        student.setClerkUserId(clerkUserId);
+        StudentEntity saved = studentRepository.save(student);
+
+        return StudentEntityDTOMapper.map(saved);
+    }
+
+    @Override
+    public StudentDTO findByClerkUserId(String clerkUserId) {
+        log.info("Finding student by Clerk user ID: {}", clerkUserId);
+
+        return studentRepository.findByClerkUserId(clerkUserId)
+                .map(StudentEntityDTOMapper::map)
+                .orElseThrow(() -> new StudentException("Student not found with Clerk ID: " + clerkUserId));
+    }
+
+    @Override
+    public StudentDTO findByEmail(String email) {
+        log.info("Finding student by email: {}", email);
+
+        return studentRepository.findByEmail(email)
+                .map(StudentEntityDTOMapper::map)
+                .orElseThrow(() -> new StudentException("Student not found with email: " + email));
     }
 }

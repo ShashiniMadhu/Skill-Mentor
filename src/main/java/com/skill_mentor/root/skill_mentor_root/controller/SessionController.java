@@ -24,21 +24,11 @@ import java.util.Map;
 
 @CrossOrigin(origins = {"http://localhost:5173"}) // Updated CORS
 @RestController
-@RequestMapping(value="/academic")
+@RequestMapping(value="/academic") // Fixed: Added full path
 public class SessionController {
 
     @Autowired
     private SessionService sessionService;
-
-//    @PostMapping
-//    public ResponseEntity<SessionDTO> createSession(@RequestBody SessionDTO sessionDTO){
-//        SessionDTO createdSession = sessionService.createSession(sessionDTO);
-//        if(createdSession != null){
-//            return new ResponseEntity<>(createdSession, HttpStatus.CREATED);
-//        }else{
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//    }
 
     //For LiteDTO
     @PostMapping(value = "/session", consumes = Constants.APPLICATION_JSON, produces = Constants.APPLICATION_JSON)
@@ -67,13 +57,13 @@ public class SessionController {
         return new ResponseEntity<>(sessions, HttpStatus.OK);
     }
 
-    @PutMapping()
+    @PutMapping("/session") // Fixed: Added /session path
     public ResponseEntity<SessionDTO> updateSession(@RequestBody SessionDTO sessionDTO) {
         SessionDTO sessionDTO1 = sessionService.updateSession(sessionDTO);
         return new ResponseEntity<>(sessionDTO1, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/session/{id}") // Fixed: Added /session path
     public ResponseEntity<SessionDTO> deleteSession(@PathVariable Integer id) {
         SessionDTO session = sessionService.deleteSessionById(id);
         return new ResponseEntity<>(session, HttpStatus.OK);
@@ -87,6 +77,19 @@ public class SessionController {
 
         try {
             SessionDTO updatedSession = sessionService.updateSessionStatusAndLink(sessionId, status, sessionLink);
+            return new ResponseEntity<>(updatedSession, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping("/session/{sessionId}/slip-link")
+    public ResponseEntity<SessionDTO> updateSessionSlipLink(
+            @PathVariable Integer sessionId,
+            @RequestBody Map<String, String> request) {
+        try {
+            String slipLink = request.get("slipLink");
+            SessionDTO updatedSession = sessionService.updateSessionSlipLink(sessionId, slipLink);
             return new ResponseEntity<>(updatedSession, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

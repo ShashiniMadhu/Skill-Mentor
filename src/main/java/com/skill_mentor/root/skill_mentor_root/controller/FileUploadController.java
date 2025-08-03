@@ -1,11 +1,13 @@
 package com.skill_mentor.root.skill_mentor_root.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,37 +17,39 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @CrossOrigin(origins = {"http://localhost:5173"})
 @RestController
 @RequestMapping("/academic")
 public class FileUploadController {
 
-    // Configure upload directory in application.properties
     @Value("${file.upload.dir:uploads/}")
     private String uploadDir;
 
+    @Value("${server.port:8080}")
+    private String serverPort;
+
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
+        Map<String, String> response = new HashMap<>();
+
         try {
-            // Validate file
             if (file.isEmpty()) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Please select a file to upload"));
+                response.put("error", "Please select a file to upload");
+                return ResponseEntity.badRequest().body(response);
             }
 
-            // Check file size (10MB limit)
-            long maxSize = 10 * 1024 * 1024; // 10MB
-            if (file.getSize() > maxSize) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "File size must be less than 10MB"));
-            }
-
-            // Check file type
+            // Validate file type
             String contentType = file.getContentType();
-            if (contentType == null ||
-                    (!contentType.startsWith("image/") && !contentType.equals("application/pdf"))) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Only image files and PDF are allowed"));
+            if (contentType == null || (!contentType.startsWith("image/") && !contentType.equals("application/pdf"))) {
+                response.put("error", "Only image files and PDFs are allowed");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Validate file size (10MB limit)
+            if (file.getSize() > 10 * 1024 * 1024) {
+                response.put("error", "File size exceeds 10MB limit");
+                return ResponseEntity.badRequest().body(response);
             }
 
             // Create upload directory if it doesn't exist
@@ -66,17 +70,21 @@ public class FileUploadController {
             Path filePath = uploadPath.resolve(uniqueFilename);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Return file URL
-            String fileUrl = "/uploads/" + uniqueFilename;
-            Map<String, String> response = new HashMap<>();
+            // Generate file URL
+            String fileUrl = "http://localhost:" + serverPort + "/uploads/" + uniqueFilename;
+
+            log.info("File uploaded successfully: {} -> {}", originalFilename, uniqueFilename);
+
             response.put("fileUrl", fileUrl);
-            response.put("message", "File uploaded successfully");
+            response.put("filename", uniqueFilename);
+            response.put("originalFilename", originalFilename);
 
             return ResponseEntity.ok(response);
 
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to upload file: " + e.getMessage()));
+            log.error("Error uploading file: {}", e.getMessage());
+            response.put("error", "Failed to upload file: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

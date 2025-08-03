@@ -49,4 +49,29 @@ public interface StudentService {
      * @return a StudentDTO object representing the deleted student
      */
     StudentDTO deleteStudentById(Integer id);
+
+    /**
+     * Links a student to a clerk user by email.
+     *
+     * @param email the email of the student
+     * @param clerkUserId the ID of the clerk user to link
+     * @return a StudentDTO object representing the updated student
+     */
+    StudentDTO linkClerkUser(String email, String clerkUserId);
+
+    /**
+     * Finds a student by their clerk user ID.
+     *
+     * @param clerkUserId the clerk user ID to search for
+     * @return a StudentDTO object representing the student, or null if not found
+     */
+    StudentDTO findByClerkUserId(String clerkUserId);
+
+    /**
+     * Finds a student by their email.
+     *
+     * @param email the email to search for
+     * @return a StudentDTO object representing the student, or null if not found
+     */
+    StudentDTO findByEmail(String email);
 }

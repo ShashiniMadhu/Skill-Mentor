@@ -19,6 +19,10 @@ public class StudentDTO {
     @JsonProperty("student_id")
     private Integer studentId;
 
+    @NotBlank(message = "Clerk user ID must not be blank")
+    @JsonProperty("clerk_user_id")
+    private String clerkUserId;
+
     @NotBlank(message = "First name must not be blank")
     @JsonProperty("first_name")
     private String firstName;
