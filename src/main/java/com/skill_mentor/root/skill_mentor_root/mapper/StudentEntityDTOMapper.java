@@ -7,6 +7,7 @@ public class StudentEntityDTOMapper {
     public static StudentDTO map(StudentEntity studentEntity) {
         StudentDTO studentDTO = new StudentDTO();
         studentDTO.setStudentId(studentEntity.getStudentId());
+        studentDTO.setClerkUserId(studentEntity.getClerkUserId());
         studentDTO.setFirstName(studentEntity.getFirstName());
         studentDTO.setLastName(studentEntity.getLastName());
         studentDTO.setEmail(studentEntity.getEmail());
@@ -21,6 +22,7 @@ public class StudentEntityDTOMapper {
     public static StudentEntity map(StudentDTO studentDTO) {
         StudentEntity studentEntity = new StudentEntity();
         studentEntity.setStudentId(studentDTO.getStudentId());
+        studentEntity.setClerkUserId(studentDTO.getClerkUserId());
         studentEntity.setFirstName(studentDTO.getFirstName());
         studentEntity.setLastName(studentDTO.getLastName());
         studentEntity.setEmail(studentDTO.getEmail());

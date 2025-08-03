@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = {"http://localhost:5173"}) // Updated CORS
 @Slf4j
@@ -64,11 +65,49 @@ public class StudentController {
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
-    // NEW: Get all sessions for a specific student
     @GetMapping("/{studentId}/sessions")
     public ResponseEntity<List<SessionDTO>> getSessionsByStudentId(@PathVariable Integer studentId) {
         List<SessionDTO> sessions = sessionService.getSessionsByStudentId(studentId);
         return new ResponseEntity<>(sessions, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/student/by-email/{email}", produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<StudentDTO> findByEmail(@PathVariable String email) {
+        final StudentDTO student = studentService.findByEmail(email);
+        return new ResponseEntity<>(student, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/student/detect-role", produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<Map<String, String>> detectUserRole(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+
+        try {
+            // Check if user exists in student table
+            studentService.findByEmail(email);
+            return ResponseEntity.ok(Map.of("role", "student"));
+        } catch (StudentException e) {
+            // Check if user exists in admin table (you might want to inject AdminService here)
+            try {
+                // You'll need to inject AdminService or create a separate endpoint
+                return ResponseEntity.ok(Map.of("role", "unknown"));
+            } catch (Exception ex) {
+                return ResponseEntity.ok(Map.of("role", "unknown"));
+            }
+        }
+    }
+
+    @PostMapping(value = "/student/link-clerk", produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<StudentDTO> linkClerkUser(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String clerkUserId = request.get("clerkUserId");
+
+        final StudentDTO student = studentService.linkClerkUser(email, clerkUserId);
+        return new ResponseEntity<>(student, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/student/by-clerk/{clerkUserId}", produces = Constants.APPLICATION_JSON)
+    public ResponseEntity<StudentDTO> findByClerkUserId(@PathVariable String clerkUserId) {
+        final StudentDTO student = studentService.findByClerkUserId(clerkUserId);
+        return new ResponseEntity<>(student, HttpStatus.OK);
+    }
 }
