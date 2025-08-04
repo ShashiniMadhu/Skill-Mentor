@@ -43,7 +43,6 @@ public class StudentDTO {
     @JsonProperty("address")
     private String address;
 
-    @NotNull(message = "Age must not be null")
     @Min(value = 18, message = "Age must be at least 18")
     @JsonProperty("age")
     private Integer age;
