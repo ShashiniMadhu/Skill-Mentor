@@ -38,11 +38,9 @@ public class StudentEntity {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @NotBlank(message = "Phone number must not be blank")
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @NotBlank(message = "Address must not be blank")
     @Column(name = "address", nullable = false)
     private String address;
 

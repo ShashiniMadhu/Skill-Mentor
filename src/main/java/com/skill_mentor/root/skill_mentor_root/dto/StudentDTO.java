@@ -35,11 +35,9 @@ public class StudentDTO {
     @JsonProperty("email")
     private String email;
 
-    @NotBlank(message = "Phone number must not be blank")
     @JsonProperty("phone_number")
     private String phoneNumber;
 
-    @NotBlank(message = "Address must not be blank")
     @JsonProperty("address")
     private String address;
 
@@ -47,7 +45,6 @@ public class StudentDTO {
     @JsonProperty("age")
     private Integer age;
 
-    @NotBlank(message = "Password must not be blank")
     @Size(min = 8, message = "Password must be at least 8 characters")
     @JsonProperty("password")
     private String password;
