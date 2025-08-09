@@ -34,53 +34,81 @@ public class StudentServiceImpl implements StudentService {
     @Transactional(rollbackFor = Exception.class)
     public StudentDTO createStudent(StudentDTO studentDTO) {
         log.info("Creating new student...");
+        log.debug("Received StudentDTO: {}", studentDTO);
 
         if (studentDTO == null) {
             log.error("Failed to create student: input DTO is null.");
             throw new IllegalArgumentException("Student data must not be null.");
         }
 
-        // Set default values for Clerk users if not provided
-        if (studentDTO.getPhoneNumber() == null || studentDTO.getPhoneNumber().trim().isEmpty()) {
-            studentDTO.setPhoneNumber("N/A");
-        }
-
-        if (studentDTO.getAddress() == null || studentDTO.getAddress().trim().isEmpty()) {
-            studentDTO.setAddress("N/A");
-        }
-
-        if (studentDTO.getAge() == null) {
-            studentDTO.setAge(18); // Default minimum age
-        }
-
-        if (studentDTO.getRole() == null || studentDTO.getRole().trim().isEmpty()) {
-            studentDTO.setRole("student");
-        }
-
-        // HASH PASSWORD BEFORE SAVING - provide default if not provided
-        String passwordToHash = studentDTO.getPassword();
-        if (!StringUtils.hasText(passwordToHash)) {
-            passwordToHash = "clerk_user_default"; // Default password for Clerk users
-        }
-
-        String hashedPassword = passwordEncoder.encode(passwordToHash);
-        studentDTO.setPassword(hashedPassword);
-        log.debug("Password hashed for student: {}", studentDTO.getFirstName());
-
-        log.debug("StudentDTO received: {}", studentDTO.getFirstName());
-
         try {
-            final StudentEntity studentEntity = StudentEntityDTOMapper.map(studentDTO);
-            final StudentEntity savedEntity = studentRepository.save(studentEntity);
-            log.info("Student created with ID: {} at data-source: {}", savedEntity.getStudentId(), this.datasource);
+            if (studentDTO.getEmail() == null || studentDTO.getEmail().trim().isEmpty()) {
+                throw new IllegalArgumentException("Email is required");
+            }
 
-            // Don't return the hashed password in response
+            if (studentDTO.getFirstName() == null || studentDTO.getFirstName().trim().isEmpty()) {
+                throw new IllegalArgumentException("First name is required");
+            }
+
+            if (studentDTO.getLastName() == null || studentDTO.getLastName().trim().isEmpty()) {
+                throw new IllegalArgumentException("Last name is required");
+            }
+
+            // Check if student already exists with this email
+            if (studentRepository.findByEmail(studentDTO.getEmail()).isPresent()) {
+                log.error("Student already exists with email: {}", studentDTO.getEmail());
+                throw new StudentException("Student already exists with email: " + studentDTO.getEmail());
+            }
+
+            // Set default values for optional fields
+            if (studentDTO.getPhoneNumber() == null || studentDTO.getPhoneNumber().trim().isEmpty()) {
+                studentDTO.setPhoneNumber("Not provided");
+            }
+
+            if (studentDTO.getAddress() == null || studentDTO.getAddress().trim().isEmpty()) {
+                studentDTO.setAddress("Not provided");
+            }
+
+            if (studentDTO.getAge() == null) {
+                studentDTO.setAge(18);
+            }
+
+            if (studentDTO.getRole() == null || studentDTO.getRole().trim().isEmpty()) {
+                studentDTO.setRole("student");
+            }
+
+            // Handle password
+            String passwordToHash = studentDTO.getPassword();
+            if (passwordToHash == null || passwordToHash.trim().isEmpty()) {
+                passwordToHash = "ClerkUser123!"; // Strong default password
+            }
+
+            String hashedPassword = passwordEncoder.encode(passwordToHash);
+            studentDTO.setPassword(hashedPassword);
+
+            log.info("Creating student with email: {} and clerk_user_id: {}",
+                    studentDTO.getEmail(), studentDTO.getClerkUserId());
+
+            // Map and save
+            final StudentEntity studentEntity = StudentEntityDTOMapper.map(studentDTO);
+
+            log.debug("StudentEntity before save: clerkUserId={}, email={}, firstName={}",
+                    studentEntity.getClerkUserId(), studentEntity.getEmail(), studentEntity.getFirstName());
+
+            final StudentEntity savedEntity = studentRepository.save(studentEntity);
+            log.info("Student created successfully with ID: {} at datasource: {}",
+                    savedEntity.getStudentId(), this.datasource);
+
+            // Return response without password
             StudentDTO responseDTO = StudentEntityDTOMapper.map(savedEntity);
-            responseDTO.setPassword(null); // Hide password in response
+            responseDTO.setPassword(null);
             return responseDTO;
 
         } catch (Exception e) {
-            log.error("Error creating student: {}", e.getMessage());
+            log.error("Error creating student with email {}: {}", studentDTO.getEmail(), e.getMessage(), e);
+            if (e instanceof StudentException) {
+                throw e;
+            }
             throw new StudentException("Failed to create student: " + e.getMessage());
         }
     }
