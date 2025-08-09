@@ -21,7 +21,6 @@ public class StudentEntity {
     @Column(name = "student_id")
     private Integer studentId;
 
-    @NotBlank(message = "Clerk user ID must not be blank")
     @Column(name = "clerk_user_id", nullable = false)
     private String clerkUserId;
 
