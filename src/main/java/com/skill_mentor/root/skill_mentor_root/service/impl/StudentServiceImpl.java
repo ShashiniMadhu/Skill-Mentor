@@ -32,7 +32,6 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-//    @CacheEvict(value = {"studentCache", "allStudentsCache"}, allEntries = true)
     public StudentDTO createStudent(StudentDTO studentDTO) {
         log.info("Creating new student...");
 
@@ -41,22 +40,49 @@ public class StudentServiceImpl implements StudentService {
             throw new IllegalArgumentException("Student data must not be null.");
         }
 
-        // HASH PASSWORD BEFORE SAVING
-        if (StringUtils.hasText(studentDTO.getPassword())) {
-            String hashedPassword = passwordEncoder.encode(studentDTO.getPassword());
-            studentDTO.setPassword(hashedPassword);
-            log.debug("Password hashed for student: {}", studentDTO.getFirstName());
+        // Set default values for Clerk users if not provided
+        if (studentDTO.getPhoneNumber() == null || studentDTO.getPhoneNumber().trim().isEmpty()) {
+            studentDTO.setPhoneNumber("N/A");
         }
 
-        log.debug("StudentDTO received: {}", studentDTO.getFirstName()); // Don't log full DTO with password
-        final StudentEntity studentEntity = StudentEntityDTOMapper.map(studentDTO);
-        final StudentEntity savedEntity = studentRepository.save(studentEntity);
-        log.info("Student created with ID: {} at data-source: {}", savedEntity.getStudentId(), this.datasource);
+        if (studentDTO.getAddress() == null || studentDTO.getAddress().trim().isEmpty()) {
+            studentDTO.setAddress("N/A");
+        }
 
-        // Don't return the hashed password in response
-        StudentDTO responseDTO = StudentEntityDTOMapper.map(savedEntity);
-        responseDTO.setPassword(null); // Hide password in response
-        return responseDTO;
+        if (studentDTO.getAge() == null) {
+            studentDTO.setAge(18); // Default minimum age
+        }
+
+        if (studentDTO.getRole() == null || studentDTO.getRole().trim().isEmpty()) {
+            studentDTO.setRole("student");
+        }
+
+        // HASH PASSWORD BEFORE SAVING - provide default if not provided
+        String passwordToHash = studentDTO.getPassword();
+        if (!StringUtils.hasText(passwordToHash)) {
+            passwordToHash = "clerk_user_default"; // Default password for Clerk users
+        }
+
+        String hashedPassword = passwordEncoder.encode(passwordToHash);
+        studentDTO.setPassword(hashedPassword);
+        log.debug("Password hashed for student: {}", studentDTO.getFirstName());
+
+        log.debug("StudentDTO received: {}", studentDTO.getFirstName());
+
+        try {
+            final StudentEntity studentEntity = StudentEntityDTOMapper.map(studentDTO);
+            final StudentEntity savedEntity = studentRepository.save(studentEntity);
+            log.info("Student created with ID: {} at data-source: {}", savedEntity.getStudentId(), this.datasource);
+
+            // Don't return the hashed password in response
+            StudentDTO responseDTO = StudentEntityDTOMapper.map(savedEntity);
+            responseDTO.setPassword(null); // Hide password in response
+            return responseDTO;
+
+        } catch (Exception e) {
+            log.error("Error creating student: {}", e.getMessage());
+            throw new StudentException("Failed to create student: " + e.getMessage());
+        }
     }
 
     @Override
