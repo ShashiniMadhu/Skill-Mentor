@@ -14,9 +14,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // Unified CORS configuration
+        // Updated CORS configuration to include your production domains
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173")
+                .allowedOrigins(
+                        "https://skillmentoe.vercel.app",  // Your Vercel deployment
+                        "http://localhost:3000",          // Local development
+                        "http://localhost:5173",          // Vite dev server
+                        "http://localhost:5174"           // Alternative Vite port
+                )
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
