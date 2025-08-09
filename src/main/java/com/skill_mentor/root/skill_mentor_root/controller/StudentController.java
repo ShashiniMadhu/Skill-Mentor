@@ -33,8 +33,23 @@ public class StudentController {
 
     @PostMapping(value = "/student", consumes = Constants.APPLICATION_JSON, produces = Constants.APPLICATION_JSON)
     public ResponseEntity<StudentDTO> createStudent(@RequestBody @Valid StudentDTO studentDTO) {
-        final StudentDTO savedDTO = studentService.createStudent(studentDTO);
-        return new ResponseEntity<>(savedDTO, HttpStatus.OK);
+        log.info("Received request to create student with email: {}", studentDTO.getEmail());
+        log.debug("Full StudentDTO received: {}", studentDTO);
+
+        try {
+            final StudentDTO savedDTO = studentService.createStudent(studentDTO);
+            log.info("Student created successfully with ID: {}", savedDTO.getStudentId());
+            return new ResponseEntity<>(savedDTO, HttpStatus.CREATED); // Use 201 CREATED instead of 200
+        } catch (StudentException e) {
+            log.error("StudentException creating student: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT); // 409 for duplicate
+        } catch (IllegalArgumentException e) {
+            log.error("IllegalArgumentException creating student: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); // 400 for invalid data
+        } catch (Exception e) {
+            log.error("Unexpected error creating student: {}", e.getMessage(), e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping(value = "/student", produces = Constants.APPLICATION_JSON)
@@ -73,8 +88,17 @@ public class StudentController {
 
     @GetMapping(value = "/student/by-email/{email}", produces = Constants.APPLICATION_JSON)
     public ResponseEntity<StudentDTO> findByEmail(@PathVariable String email) {
-        final StudentDTO student = studentService.findByEmail(email);
-        return new ResponseEntity<>(student, HttpStatus.OK);
+        log.info("Searching for student with email: {}", email);
+        try {
+            final StudentDTO student = studentService.findByEmail(email);
+            return new ResponseEntity<>(student, HttpStatus.OK);
+        } catch (StudentException e) {
+            log.info("Student not found with email: {}", email);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            log.error("Error finding student by email {}: {}", email, e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping(value = "/student/detect-role", produces = Constants.APPLICATION_JSON)

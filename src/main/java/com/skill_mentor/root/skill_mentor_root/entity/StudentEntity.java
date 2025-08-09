@@ -21,7 +21,8 @@ public class StudentEntity {
     @Column(name = "student_id")
     private Integer studentId;
 
-    @Column(name = "clerk_user_id", nullable = false)
+    // ✅ FIXED: Make clerk_user_id nullable initially
+    @Column(name = "clerk_user_id", nullable = true)
     private String clerkUserId;
 
     @NotBlank(message = "First name must not be blank")
@@ -34,13 +35,14 @@ public class StudentEntity {
 
     @Email(message = "Email must be valid")
     @NotBlank(message = "Email must not be blank")
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true) // Add unique constraint
     private String email;
 
-    @Column(name = "phone_number", nullable = false)
+    // ✅ FIXED: Make these nullable since they have default values
+    @Column(name = "phone_number", nullable = true)
     private String phoneNumber;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address", nullable = true)
     private String address;
 
     @NotNull(message = "Age must not be null")
